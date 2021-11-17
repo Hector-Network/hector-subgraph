@@ -84,9 +84,9 @@ export class Transfer__Params {
   }
 }
 
-export class Hector extends ethereum.SmartContract {
-  static bind(address: Address): Hector {
-    return new Hector("Hector", address);
+export class HectorERC20 extends ethereum.SmartContract {
+  static bind(address: Address): HectorERC20 {
+    return new HectorERC20("HectorERC20", address);
   }
 
   DOMAIN_SEPARATOR(): Bytes {

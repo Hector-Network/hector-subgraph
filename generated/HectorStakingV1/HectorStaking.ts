@@ -54,7 +54,7 @@ export class OwnershipPushed__Params {
   }
 }
 
-export class HectorStakingV1__epochResult {
+export class HectorStaking__epochResult {
   value0: BigInt;
   value1: BigInt;
   value2: BigInt;
@@ -77,7 +77,7 @@ export class HectorStakingV1__epochResult {
   }
 }
 
-export class HectorStakingV1__warmupInfoResult {
+export class HectorStaking__warmupInfoResult {
   value0: BigInt;
   value1: BigInt;
   value2: BigInt;
@@ -100,9 +100,9 @@ export class HectorStakingV1__warmupInfoResult {
   }
 }
 
-export class HectorStakingV1 extends ethereum.SmartContract {
-  static bind(address: Address): HectorStakingV1 {
-    return new HectorStakingV1("HectorStakingV1", address);
+export class HectorStaking extends ethereum.SmartContract {
+  static bind(address: Address): HectorStaking {
+    return new HectorStaking("HectorStaking", address);
   }
 
   HEC(): Address {
@@ -158,14 +158,14 @@ export class HectorStakingV1 extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  epoch(): HectorStakingV1__epochResult {
+  epoch(): HectorStaking__epochResult {
     let result = super.call(
       "epoch",
       "epoch():(uint256,uint256,uint256,uint256)",
       []
     );
 
-    return new HectorStakingV1__epochResult(
+    return new HectorStaking__epochResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toBigInt(),
@@ -173,7 +173,7 @@ export class HectorStakingV1 extends ethereum.SmartContract {
     );
   }
 
-  try_epoch(): ethereum.CallResult<HectorStakingV1__epochResult> {
+  try_epoch(): ethereum.CallResult<HectorStaking__epochResult> {
     let result = super.tryCall(
       "epoch",
       "epoch():(uint256,uint256,uint256,uint256)",
@@ -184,7 +184,7 @@ export class HectorStakingV1 extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new HectorStakingV1__epochResult(
+      new HectorStaking__epochResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toBigInt(),
@@ -311,14 +311,14 @@ export class HectorStakingV1 extends ethereum.SmartContract {
     return ethereum.CallResult.fromValue(value[0].toAddress());
   }
 
-  warmupInfo(param0: Address): HectorStakingV1__warmupInfoResult {
+  warmupInfo(param0: Address): HectorStaking__warmupInfoResult {
     let result = super.call(
       "warmupInfo",
       "warmupInfo(address):(uint256,uint256,uint256,bool)",
       [ethereum.Value.fromAddress(param0)]
     );
 
-    return new HectorStakingV1__warmupInfoResult(
+    return new HectorStaking__warmupInfoResult(
       result[0].toBigInt(),
       result[1].toBigInt(),
       result[2].toBigInt(),
@@ -328,7 +328,7 @@ export class HectorStakingV1 extends ethereum.SmartContract {
 
   try_warmupInfo(
     param0: Address
-  ): ethereum.CallResult<HectorStakingV1__warmupInfoResult> {
+  ): ethereum.CallResult<HectorStaking__warmupInfoResult> {
     let result = super.tryCall(
       "warmupInfo",
       "warmupInfo(address):(uint256,uint256,uint256,bool)",
@@ -339,7 +339,7 @@ export class HectorStakingV1 extends ethereum.SmartContract {
     }
     let value = result.value;
     return ethereum.CallResult.fromValue(
-      new HectorStakingV1__warmupInfoResult(
+      new HectorStaking__warmupInfoResult(
         value[0].toBigInt(),
         value[1].toBigInt(),
         value[2].toBigInt(),

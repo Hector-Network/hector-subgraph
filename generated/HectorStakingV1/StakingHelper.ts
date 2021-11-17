@@ -10,9 +10,9 @@ import {
   BigInt
 } from "@graphprotocol/graph-ts";
 
-export class StakingHelperV1 extends ethereum.SmartContract {
-  static bind(address: Address): StakingHelperV1 {
-    return new StakingHelperV1("StakingHelperV1", address);
+export class StakingHelper extends ethereum.SmartContract {
+  static bind(address: Address): StakingHelper {
+    return new StakingHelper("StakingHelper", address);
   }
 
   HEC(): Address {
