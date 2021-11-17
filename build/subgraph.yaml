@@ -1,6 +1,6 @@
 specVersion: 0.0.2
 schema:
-  file: ./schema.graphql
+  file: schema.graphql
 dataSources:
   - kind: ethereum/contract
     name: HectorStakingV1
@@ -17,22 +17,22 @@ dataSources:
         - HectorStakingV1
       abis:
         - name: HectorStakingV1
-          file: ./abis/HectorStakingV1.json
+          file: HectorStakingV1\abis\HectorStakingV1.json
         - name: StakingHelperV1
-          file: ./abis/StakingHelperV1.json
+          file: HectorStakingV1\abis\StakingHelperV1.json
         - name: sHectorERC20
-          file: ./abis/sHectorERC20.json
+          file: HectorStakingV1\abis\sHectorERC20.json
         - name: HectorERC20
-          file: ./abis/HectorERC20.json
+          file: HectorStakingV1\abis\HectorERC20.json
         - name: UniswapV2Pair
-          file: ./abis/UniswapV2Pair.json
+          file: HectorStakingV1\abis\UniswapV2Pair.json
         - name: ERC20
-          file: ./abis/ERC20.json
+          file: HectorStakingV1\abis\ERC20.json
         - name: CirculatingSupply
-          file: ./abis/CirculatingSupply.json
+          file: HectorStakingV1\abis\CirculatingSupply.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake
         - function: unstake(uint256,bool)
           handler: handleUnstake
-      file: ./src/HectorStakingV1.ts
+      file: HectorStakingV1\HectorStakingV1.wasm
