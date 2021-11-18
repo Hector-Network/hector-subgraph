@@ -107,7 +107,7 @@ function getCriculatingSupply(transaction: Transaction, total_supply: BigDecimal
     let circ_supply: BigDecimal
     if(transaction.blockNumber.gt(BigInt.fromString(CIRCULATING_SUPPLY_CONTRACT_BLOCK))){
         let circulatingsupply_contract = CirculatingSupply.bind(Address.fromString(CIRCULATING_SUPPLY_CONTRACT))
-        circ_supply = toDecimal(circulatingsupply_contract.OHMCirculatingSupply(), 9)
+        circ_supply = toDecimal(circulatingsupply_contract.HECCirculatingSupply(), 9)
     } else {
         circ_supply = total_supply;
     }

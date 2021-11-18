@@ -12,7 +12,7 @@
     },
     {
         "inputs": [],
-        "name": "OHM",
+        "name": "HEC",
         "outputs": [
             {
                 "internalType": "address",
@@ -25,7 +25,7 @@
     },
     {
         "inputs": [],
-        "name": "OHMCirculatingSupply",
+        "name": "HECCirculatingSupply",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -38,7 +38,7 @@
     },
     {
         "inputs": [],
-        "name": "getNonCirculatingOHM",
+        "name": "getNonCirculatingHEC",
         "outputs": [
             {
                 "internalType": "uint256",
@@ -53,7 +53,7 @@
         "inputs": [
             {
                 "internalType": "address",
-                "name": "_ohm",
+                "name": "_hec",
                 "type": "address"
             }
         ],
@@ -89,7 +89,7 @@
                 "type": "uint256"
             }
         ],
-        "name": "nonCirculatingOHMAddresses",
+        "name": "nonCirculatingHECAddresses",
         "outputs": [
             {
                 "internalType": "address",
@@ -121,7 +121,7 @@
                 "type": "address[]"
             }
         ],
-        "name": "setNonCirculatingOHMAddresses",
+        "name": "setNonCirculatingHECAddresses",
         "outputs": [
             {
                 "internalType": "bool",
