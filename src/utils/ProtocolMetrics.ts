@@ -62,7 +62,8 @@ import { getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate } from '
 // import { updateBondDiscounts } from './BondDiscounts';
 
 export function loadOrCreateProtocolMetric(timestamp: BigInt): ProtocolMetric{
-    let dayTimestamp = hourFromTimestamp(timestamp);
+    // TODO Change it to longer interval after 30 days
+    let dayTimestamp = hourFromTimestamp(timestamp, 4);
 
     let protocolMetric = ProtocolMetric.load(dayTimestamp)
     if (protocolMetric == null) {
@@ -284,11 +285,11 @@ function getMV_RFV(transaction: Transaction): BigDecimal[]{
         // treasuryDaiRiskFreeValue = DAI RFV + DAI
         hecdaiRFV.plus(toDecimal(daiBalance, 18)),
         // treasuryFraxRiskFreeValue = USDC RFV
-        hecusdcRFV,
+        hecusdcRFV.plus(toDecimal(usdcBalance, 6)),
         // treasuryDaiMarketValue = DAI LP + DAI
         hecdaiValue.plus(toDecimal(daiBalance, 18)),
         // treasuryFraxMarketValue = FRAX LP * FRAX
-        hecusdcValue,
+        hecusdcValue.plus(toDecimal(usdcBalance, 6)),
         wftmValue,
         wftmValue,
         // POL
