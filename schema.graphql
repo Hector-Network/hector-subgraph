@@ -114,9 +114,11 @@ type ProtocolMetric @entity {
   treasuryDaiRiskFreeValue: BigDecimal!
   treasuryUsdcRiskFreeValue: BigDecimal!
   treasuryWFTMRiskFreeValue: BigDecimal!
+  treasuryMIMRiskFreeValue: BigDecimal!
   treasuryDaiMarketValue: BigDecimal!
   treasuryUsdcMarketValue: BigDecimal!
   treasuryWFTMMarketValue: BigDecimal!
+  treasuryMIMMarketValue: BigDecimal!
   currentAPY: BigDecimal!
   runway2dot5k: BigDecimal
   runway5k: BigDecimal

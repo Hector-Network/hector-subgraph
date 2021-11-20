@@ -53,7 +53,7 @@ import {
     STAKING_CONTRACT_V2_BLOCK,
     STAKING_CONTRACT_V2,
     SHEC_ERC20_CONTRACT_V2_BLOCK,
-    SHEC_ERC20_CONTRACT_V2
+    SHEC_ERC20_CONTRACT_V2, LOCKED_ADDRESS, MIM_ERC20_CONTRACT
 } from './Constants';
 import {hourFromTimestamp} from './Dates';
 import { toDecimal } from './Decimals';
@@ -86,6 +86,8 @@ export function loadOrCreateProtocolMetric(timestamp: BigInt): ProtocolMetric{
         protocolMetric.treasuryUsdcMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryWFTMRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryWFTMMarketValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryMIMRiskFreeValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryMIMMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryOhmDaiPOL = BigDecimal.fromString("0")
         protocolMetric.treasuryOhmUsdcPOL = BigDecimal.fromString("0")
         protocolMetric.holders = BigInt.fromI32(0)
@@ -128,10 +130,23 @@ function getSohmSupply(transaction: Transaction): BigDecimal{
     return sohm_supply
 }
 
+function getHECDAIReserves(pair: UniswapV2Pair): BigDecimal[] {
+    let hecReserves = toDecimal(pair.getReserves().value0, 9)
+    let daiReserves = toDecimal(pair.getReserves().value1, 18)
+    return [hecReserves, daiReserves]
+}
+
+function getHECUSDCReserves(pair: UniswapV2Pair): BigDecimal[] {
+    let usdcReserves = toDecimal(pair.getReserves().value0, 6)
+    let hecReserves = toDecimal(pair.getReserves().value1, 9)
+    return [hecReserves, usdcReserves]
+}
+
 function getMV_RFV(transaction: Transaction): BigDecimal[]{
     let daiERC20 = ERC20.bind(Address.fromString(ERC20DAI_CONTRACT))
     let usdcERC20 = ERC20.bind(Address.fromString(USDC_ERC20_CONTRACT))
     let wftmERC20 = ERC20.bind(Address.fromString(WFTM_ERC20_CONTRACT))
+    let mimERC20 = ERC20.bind(Address.fromString(MIM_ERC20_CONTRACT))
     // let fraxERC20 = ERC20.bind(Address.fromString(ERC20FRAX_CONTRACT))
     // let aDaiERC20 = ERC20.bind(Address.fromString(ADAI_ERC20_CONTRACT))
     // let xSushiERC20 = ERC20.bind(Address.fromString(XSUSI_ERC20_CONTRACT))
@@ -147,18 +162,18 @@ function getMV_RFV(transaction: Transaction): BigDecimal[]{
     // let ohmlusdPair = UniswapV2Pair.bind(Address.fromString(SUSHI_OHMLUSD_PAIR))
     // let ohmethPair = UniswapV2Pair.bind(Address.fromString(SUSHI_OHMETH_PAIR))
 
-    let treasury_address = TREASURY_ADDRESS;
     // if(transaction.blockNumber.gt(BigInt.fromString(TREASURY_ADDRESS_V2_BLOCK))){
     //     treasury_address = TREASURY_ADDRESS_V2;
     // }
 
-    let daiBalance = daiERC20.balanceOf(Address.fromString(treasury_address))
-    let usdcBalance = usdcERC20.balanceOf(Address.fromString(treasury_address))
+    let daiBalance = daiERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let usdcBalance = usdcERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let mimBalance = mimERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     // let adaiBalance = aDaiERC20.balanceOf(Address.fromString(AAVE_ALLOCATOR))
     // let fraxBalance = fraxERC20.balanceOf(Address.fromString(treasury_address))
     // let xSushiBalance = xSushiERC20.balanceOf(Address.fromString(treasury_address))
     // let xSushi_value = toDecimal(xSushiBalance, 18).times(getXsushiUSDRate())
-    let wftmBalance = wftmERC20.balanceOf(Address.fromString(treasury_address))
+    let wftmBalance = wftmERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
     // let lusdBalance = BigInt.fromI32(0)
     // if(transaction.blockNumber.gt(BigInt.fromString(LUSD_ERC20_CONTRACTV2_BLOCK))){
@@ -181,27 +196,27 @@ function getMV_RFV(transaction: Transaction): BigDecimal[]{
     // fraxBalance = fraxBalance.plus(convexrfv)
 
     //HECDAI
-    let hecdaiBalance = hecdaiPair.balanceOf(Address.fromString(treasury_address))
+    let hecdaiBalance = hecdaiPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let hecdaiLockedBalance = hecdaiPair.balanceOf(Address.fromString(LOCKED_ADDRESS))
     // let ohmdaiOnsenBalance = ohmdaiOnsenMC.userInfo(BigInt.fromI32(OHMDAI_ONSEN_ID), Address.fromString(ONSEN_ALLOCATOR)).value0
     // let ohmdaiBalance = ohmdaiSushiBalance.plus(ohmdaiOnsenBalance)
     let hecdaiTotalLP = toDecimal(hecdaiPair.totalSupply(), 18)
-    let hecdaiPOL = toDecimal(hecdaiBalance, 18).div(hecdaiTotalLP).times(BigDecimal.fromString("100"))
-    let hecdaiValue = getPairUSD(hecdaiBalance, SPOOKY_HECDAI_PAIR, 18)
-    let hecdaiRFV = getDiscountedPairUSD(hecdaiBalance, SPOOKY_HECDAI_PAIR)
+    let hecdaiPOL = toDecimal(hecdaiBalance.plus(hecdaiLockedBalance), 18).div(hecdaiTotalLP).times(BigDecimal.fromString("100"))
+    let hecdaiValue = getPairUSD(hecdaiBalance, SPOOKY_HECDAI_PAIR, getHECDAIReserves)
+    let hecdaiRFV = getDiscountedPairUSD(hecdaiBalance, SPOOKY_HECDAI_PAIR, getHECDAIReserves)
 
     //HECUSDC
-    // TODO Check decimals
     let hecusdcValue = BigDecimal.fromString('0');
     let hecusdcRFV = BigDecimal.fromString('0')
     let hecusdcPOL = BigDecimal.fromString('0')
     if(transaction.blockNumber.gt(BigInt.fromString(SPIRIT_HECUSDC_PAIR_BLOCK))){
-        let hecusdcBalance = hecusdcPair.balanceOf(Address.fromString(treasury_address))
+        let hecusdcBalance = hecusdcPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         // let ohmdaiOnsenBalance = ohmdaiOnsenMC.userInfo(BigInt.fromI32(OHMDAI_ONSEN_ID), Address.fromString(ONSEN_ALLOCATOR)).value0
         // let ohmdaiBalance = ohmdaiSushiBalance.plus(ohmdaiOnsenBalance)
         let hecusdcTotalLP = toDecimal(hecusdcPair.totalSupply(), 18)
         hecusdcPOL = toDecimal(hecusdcBalance, 18).div(hecusdcTotalLP).times(BigDecimal.fromString("100"))
-        hecusdcValue = getPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR, 6)
-        hecusdcRFV = getDiscountedPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR)
+        hecusdcValue = getPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR, getHECUSDCReserves)
+        hecusdcRFV = getDiscountedPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR, getHECUSDCReserves)
     }
 
     //OHMFRAX
@@ -256,7 +271,7 @@ function getMV_RFV(transaction: Transaction): BigDecimal[]{
     //     }
     // }
 
-    let stableValueDecimal = toDecimal(daiBalance, 18).plus(toDecimal(usdcBalance, 6))
+    let stableValueDecimal = toDecimal(daiBalance, 18).plus(toDecimal(usdcBalance, 6)).plus(toDecimal(mimBalance, 18))
 
     let lpValue = hecdaiValue.plus(hecusdcValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV)
@@ -292,6 +307,8 @@ function getMV_RFV(transaction: Transaction): BigDecimal[]{
         hecusdcValue.plus(toDecimal(usdcBalance, 6)),
         wftmValue,
         wftmValue,
+        toDecimal(mimBalance, 18),
+        toDecimal(mimBalance, 18),
         // POL
         hecdaiPOL,
         hecusdcPOL,
@@ -403,8 +420,10 @@ export function updateProtocolMetrics(transaction: Transaction): void{
     pm.treasuryUsdcMarketValue = mv_rfv[5]
     pm.treasuryWFTMRiskFreeValue = mv_rfv[6]
     pm.treasuryWFTMMarketValue = mv_rfv[7]
-    pm.treasuryOhmDaiPOL = mv_rfv[8]
-    pm.treasuryOhmUsdcPOL = mv_rfv[9]
+    pm.treasuryMIMRiskFreeValue = mv_rfv[8]
+    pm.treasuryMIMMarketValue = mv_rfv[9]
+    pm.treasuryOhmDaiPOL = mv_rfv[10]
+    pm.treasuryOhmUsdcPOL = mv_rfv[11]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedOhm = getNextOHMRebase(transaction)

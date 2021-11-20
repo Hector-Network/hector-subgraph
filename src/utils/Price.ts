@@ -51,12 +51,13 @@ export function getHECUSDRate(): BigDecimal {
 // }
 
 //(slp_treasury/slp_supply)*(2*sqrt(lp_dai * lp_ohm))
-export function getDiscountedPairUSD(lp_amount: BigInt, pair_adress: string): BigDecimal{
+export function getDiscountedPairUSD(lp_amount: BigInt, pair_adress: string, getReserves: (pair: UniswapV2Pair) => BigDecimal[]): BigDecimal{
     let pair = UniswapV2Pair.bind(Address.fromString(pair_adress))
 
     let total_lp = pair.totalSupply()
-    let lp_token_1 = toDecimal(pair.getReserves().value0, 9)
-    let lp_token_2 = toDecimal(pair.getReserves().value1, 18)
+    let reserves = getReserves(pair)
+    let lp_token_1 = reserves[0]
+    let lp_token_2 = reserves[1]
     let kLast = lp_token_1.times(lp_token_2).truncate(0).digits
 
     let part1 = toDecimal(lp_amount,18).div(toDecimal(total_lp,18))
@@ -68,14 +69,15 @@ export function getDiscountedPairUSD(lp_amount: BigInt, pair_adress: string): Bi
     return result
 }
 
-export function getPairUSD(lp_amount: BigInt, pair_adress: string, decimals: number): BigDecimal{
+export function getPairUSD(lp_amount: BigInt, pair_adress: string, getReserves: (pair: UniswapV2Pair) => BigDecimal[]): BigDecimal{
     let pair = UniswapV2Pair.bind(Address.fromString(pair_adress))
     let total_lp = pair.totalSupply()
-    let lp_token_0 = pair.getReserves().value0
-    let lp_token_1 = pair.getReserves().value1
+    let reserves = getReserves(pair)
+    let lp_token_0 = reserves[0]
+    let lp_token_1 = reserves[1]
     let ownedLP = toDecimal(lp_amount,18).div(toDecimal(total_lp,18))
-    let ohm_value = toDecimal(lp_token_0, 9).times(getHECUSDRate())
-    let total_lp_usd = ohm_value.plus(toDecimal(lp_token_1, decimals))
+    let ohm_value = lp_token_0.times(getHECUSDRate())
+    let total_lp_usd = ohm_value.plus(lp_token_1)
 
     return ownedLP.times(total_lp_usd)
 }
