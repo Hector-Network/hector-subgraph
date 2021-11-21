@@ -17,10 +17,10 @@ export function getFTMUSDRate(): BigDecimal {
     let reserve0 = reserves.value0.toBigDecimal()
     let reserve1 = reserves.value1.toBigDecimal()
 
-    let ethRate = reserve0.div(reserve1).times(BIG_DECIMAL_1E12)
-    log.debug("ETH rate {}", [ethRate.toString()])
+    let ftmRate = reserve0.div(reserve1).times(BIG_DECIMAL_1E12)
+    log.debug("FTM rate {}", [ftmRate.toString()])
     
-    return ethRate
+    return ftmRate
 }
 
 export function getHECUSDRate(): BigDecimal {
@@ -30,25 +30,11 @@ export function getHECUSDRate(): BigDecimal {
     let reserve0 = reserves.value0.toBigDecimal()
     let reserve1 = reserves.value1.toBigDecimal()
 
-    let ohmRate = reserve1.div(reserve0).div(BIG_DECIMAL_1E9)
-    log.debug("OHM rate {}", [ohmRate.toString()])
+    let hecRate = reserve1.div(reserve0).div(BIG_DECIMAL_1E9)
+    log.debug("HEC rate {}", [hecRate.toString()])
 
-    return ohmRate
+    return hecRate
 }
-
-// export function getXsushiUSDRate(): BigDecimal {
-//     let pair = UniswapV2Pair.bind(Address.fromString(SUSHI_XSUSHI_ETH_PAIR))
-//
-//     let reserves = pair.getReserves()
-//     let reserve0 = reserves.value0.toBigDecimal()
-//     let reserve1 = reserves.value1.toBigDecimal()
-//
-//     let xsushiRate = reserve1.div(reserve0).times(getFTMUSDRate())
-//     log.debug("xsushiRate rate {}", [xsushiRate.toString()])
-//
-//     return xsushiRate
-//
-// }
 
 //(slp_treasury/slp_supply)*(2*sqrt(lp_dai * lp_ohm))
 export function getDiscountedPairUSD(lp_amount: BigInt, pair_adress: string, getReserves: (pair: UniswapV2Pair) => BigDecimal[]): BigDecimal{
@@ -81,16 +67,3 @@ export function getPairUSD(lp_amount: BigInt, pair_adress: string, getReserves: 
 
     return ownedLP.times(total_lp_usd)
 }
-
-// export function getPairWETH(lp_amount: BigInt, pair_adress: string): BigDecimal{
-//     let pair = UniswapV2Pair.bind(Address.fromString(pair_adress))
-//     let total_lp = pair.totalSupply()
-//     let lp_token_0 = pair.getReserves().value0
-//     let lp_token_1 = pair.getReserves().value1
-//     let ownedLP = toDecimal(lp_amount,18).div(toDecimal(total_lp,18))
-//     let ohm_value = toDecimal(lp_token_0, 9).times(getHECUSDRate())
-//     let eth_value = toDecimal(lp_token_1, 18).times(getFTMUSDRate())
-//     let total_lp_usd = ohm_value.plus(eth_value)
-//
-//     return ownedLP.times(total_lp_usd)
-// }

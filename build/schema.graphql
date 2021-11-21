@@ -1,101 +1,13 @@
-type DailyBond @entity {
-  id: ID!
-  timestamp: BigInt!
-  token: Token!
-  amount: BigDecimal!
-  value: BigDecimal!
-}
-
-type Ohmie @entity {
-  id: ID!
-  bondDeposits: [Deposit!]! @derivedFrom(field: "ohmie")
-  bondRedemptions: [Redemption!]! @derivedFrom(field: "ohmie")
-  stakeTransactions: [Stake!]! @derivedFrom(field: "ohmie")
-  unstakeTransactions: [Unstake!]! @derivedFrom(field: "ohmie")
-  historicBalance: [OhmieBalance!]! @derivedFrom(field: "ohmie")
-  lastBalance: OhmieBalance
-  active: Boolean!
-}
-
-type OhmieBalance @entity {
-  id: ID!
-  ohmie: Ohmie!
-  sohmBalance: BigDecimal!
-  ohmBalance: BigDecimal!
-  bondBalance: BigDecimal!
-  dollarBalance: BigDecimal!
-  stakes: [ContractInfo!]
-  bonds: [ContractInfo!]
-  timestamp: BigInt!
-}
-
-type Deposit @entity {
-  id: ID!
-  transaction: Transaction!
-  ohmie: Ohmie!
-  amount: BigDecimal!
-  maxPremium: BigDecimal!
-  token: Token!
-  value: BigDecimal!
-  timestamp: BigInt!
-}
-
-type Redemption @entity {
-  id: ID!
-  transaction: Transaction
-  ohmie: Ohmie
-  token: Token
-  timestamp: BigInt
-}
-
-type Stake @entity {
-  id: ID!
-  transaction: Transaction!
-  ohmie: Ohmie!
-  amount: BigDecimal!
-  timestamp: BigInt!
-}
-
-type Unstake @entity {
-  id: ID!
-  transaction: Transaction!
-  ohmie: Ohmie!
-  amount: BigDecimal!
-  timestamp: BigInt!
-}
-
 type Rebase @entity {
   id: ID!
   transaction: String!
   amount: BigDecimal!
   stakedOhms: BigDecimal!
+  stakedHecs: BigDecimal!
   percentage: BigDecimal!
   contract: String!
   timestamp: BigInt!
   value: BigDecimal!
-}
-
-type DailyStakingReward @entity {
-  id: ID!
-  timestamp: BigInt!
-  amount: BigDecimal!
-  value: BigDecimal!
-}
-
-type Transaction @entity {
-  id: ID!
-  timestamp: BigInt!
-  blockNumber: BigInt!
-  blockHash: Bytes!
-  from: Bytes!
-  to: Bytes
-  value: BigInt!
-  gasUsed: BigInt!
-  gasPrice: BigInt!
-}
-
-type Token @entity {
-  id: ID!
 }
 
 type ProtocolMetric @entity {
@@ -103,14 +15,18 @@ type ProtocolMetric @entity {
   timestamp: BigInt!
   ohmCirculatingSupply: BigDecimal!
   sOhmCirculatingSupply: BigDecimal!
+  hecCirculatingSupply: BigDecimal!
+  sHecCirculatingSupply: BigDecimal!
   totalSupply: BigDecimal!
   ohmPrice: BigDecimal!
+  hecPrice: BigDecimal!
   marketCap: BigDecimal!
   totalValueLocked: BigDecimal!
   treasuryRiskFreeValue: BigDecimal!
   treasuryMarketValue: BigDecimal!
   nextEpochRebase: BigDecimal!
   nextDistributedOhm: BigDecimal!
+  nextDistributedHec: BigDecimal!
   treasuryDaiRiskFreeValue: BigDecimal!
   treasuryUsdcRiskFreeValue: BigDecimal!
   treasuryWFTMRiskFreeValue: BigDecimal!
@@ -120,40 +36,10 @@ type ProtocolMetric @entity {
   treasuryWFTMMarketValue: BigDecimal!
   treasuryMIMMarketValue: BigDecimal!
   currentAPY: BigDecimal!
-  runway2dot5k: BigDecimal
-  runway5k: BigDecimal
-  runway7dot5k: BigDecimal
-  runway10k: BigDecimal
-  runway20k: BigDecimal
-  runway50k: BigDecimal
-  runway70k: BigDecimal
-  runway100k: BigDecimal
   runwayCurrent: BigDecimal
   treasuryOhmDaiPOL: BigDecimal!
   treasuryOhmUsdcPOL: BigDecimal!
+  treasuryHecDaiPOL: BigDecimal!
+  treasuryHecUsdcPOL: BigDecimal!
   holders: BigInt!
-}
-
-type ContractInfo @entity {
-  id: ID!
-  name: String
-  contract: String
-  amount: BigDecimal
-}
-
-type Aux @entity {
-  id: ID!
-  value: BigInt!
-}
-
-type BondDiscount @entity {
-  id: ID!
-  timestamp: BigInt!
-  dai_discount: BigDecimal!
-  ohmdai_discount: BigDecimal!
-  frax_discount: BigDecimal!
-  ohmfrax_discount: BigDecimal!
-  eth_discount: BigDecimal!
-  lusd_discount: BigDecimal!
-  ohmlusd_discount: BigDecimal!
 }
