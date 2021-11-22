@@ -30,13 +30,13 @@ import { toDecimal } from './Decimals';
 import { getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate } from './Price';
 
 
-export function loadOrCreateProtocolMetric(blockNumber: BigInt): ProtocolMetric{
+export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric{
     let id = blockNumber.minus(blockNumber.mod(BigInt.fromString("16000")));
 
     let protocolMetric = ProtocolMetric.load(id.toString())
     if (protocolMetric == null) {
         protocolMetric = new ProtocolMetric(id.toString())
-        protocolMetric.timestamp = blockNumber
+        protocolMetric.timestamp = timestamp
         protocolMetric.hecCirculatingSupply = BigDecimal.fromString("0")
         protocolMetric.sHecCirculatingSupply = BigDecimal.fromString("0")
         protocolMetric.totalSupply = BigDecimal.fromString("0")
@@ -231,8 +231,8 @@ function getRunway(sHec: BigDecimal, rfv: BigDecimal, rebase: BigDecimal): BigDe
 }
 
 
-export function updateProtocolMetrics(blockNumber: BigInt): void{
-    let pm = loadOrCreateProtocolMetric(blockNumber);
+export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): void{
+    let pm = loadOrCreateProtocolMetric(blockNumber, timestamp);
 
     //Total Supply
     pm.totalSupply = getTotalSupply()
@@ -286,6 +286,6 @@ export function handleBlock(block: ethereum.Block): void {
         lastBlock.number = block.number
         lastBlock.timestamp = block.timestamp
         lastBlock.save()
-        updateProtocolMetrics(block.number)
+        updateProtocolMetrics(block.number, block.timestamp)
     }
 }

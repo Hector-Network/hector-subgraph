@@ -2,7 +2,6 @@ type Rebase @entity {
   id: ID!
   transaction: String!
   amount: BigDecimal!
-  stakedOhms: BigDecimal!
   stakedHecs: BigDecimal!
   percentage: BigDecimal!
   contract: String!
@@ -13,19 +12,15 @@ type Rebase @entity {
 type ProtocolMetric @entity {
   id: ID!
   timestamp: BigInt!
-  ohmCirculatingSupply: BigDecimal!
-  sOhmCirculatingSupply: BigDecimal!
   hecCirculatingSupply: BigDecimal!
   sHecCirculatingSupply: BigDecimal!
   totalSupply: BigDecimal!
-  ohmPrice: BigDecimal!
   hecPrice: BigDecimal!
   marketCap: BigDecimal!
   totalValueLocked: BigDecimal!
   treasuryRiskFreeValue: BigDecimal!
   treasuryMarketValue: BigDecimal!
   nextEpochRebase: BigDecimal!
-  nextDistributedOhm: BigDecimal!
   nextDistributedHec: BigDecimal!
   treasuryDaiRiskFreeValue: BigDecimal!
   treasuryUsdcRiskFreeValue: BigDecimal!
@@ -37,11 +32,8 @@ type ProtocolMetric @entity {
   treasuryMIMMarketValue: BigDecimal!
   currentAPY: BigDecimal!
   runwayCurrent: BigDecimal
-  treasuryOhmDaiPOL: BigDecimal!
-  treasuryOhmUsdcPOL: BigDecimal!
   treasuryHecDaiPOL: BigDecimal!
   treasuryHecUsdcPOL: BigDecimal!
-  holders: BigInt!
 }
 
 type LastBlock @entity {
