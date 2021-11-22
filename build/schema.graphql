@@ -43,3 +43,9 @@ type ProtocolMetric @entity {
   treasuryHecUsdcPOL: BigDecimal!
   holders: BigInt!
 }
+
+type LastBlock @entity {
+  id: ID!
+  number: BigInt!
+  timestamp: BigInt!
+}

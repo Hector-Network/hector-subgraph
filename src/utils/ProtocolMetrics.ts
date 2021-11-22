@@ -7,7 +7,7 @@ import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
 import { HectorStaking } from '../../generated/HectorStakingV1/HectorStaking';
 import { ethereum } from '@graphprotocol/graph-ts'
 
-import { ProtocolMetric } from '../../generated/schema'
+import { ProtocolMetric, LastBlock } from '../../generated/schema'
 import {
     CIRCULATING_SUPPLY_CONTRACT,
     CIRCULATING_SUPPLY_CONTRACT_BLOCK,
@@ -293,11 +293,12 @@ export function updateProtocolMetrics(blockNumber: BigInt): void{
 }
 
 export function handleBlock(block: ethereum.Block): void {
-
-    // update metrics every 200 blocks
-    let skipBlocks = 200;
-
-    if(block.number.toI32()%skipBlocks==0){
+    let lastBlock = LastBlock.load('0')
+    if (lastBlock == null || block.number.minus(lastBlock.number).gt(BigInt.fromString('300'))) {
+        lastBlock = new LastBlock('0')
+        lastBlock.number = block.number
+        lastBlock.timestamp = block.timestamp
+        lastBlock.save()
         updateProtocolMetrics(block.number)
     }
 }
