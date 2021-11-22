@@ -37,19 +37,15 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt): ProtocolMetric{
     if (protocolMetric == null) {
         protocolMetric = new ProtocolMetric(id.toString())
         protocolMetric.timestamp = blockNumber
-        protocolMetric.ohmCirculatingSupply = BigDecimal.fromString("0")
-        protocolMetric.sOhmCirculatingSupply = BigDecimal.fromString("0")
         protocolMetric.hecCirculatingSupply = BigDecimal.fromString("0")
         protocolMetric.sHecCirculatingSupply = BigDecimal.fromString("0")
         protocolMetric.totalSupply = BigDecimal.fromString("0")
-        protocolMetric.ohmPrice = BigDecimal.fromString("0")
         protocolMetric.hecPrice = BigDecimal.fromString("0")
         protocolMetric.marketCap = BigDecimal.fromString("0")
         protocolMetric.totalValueLocked = BigDecimal.fromString("0")
         protocolMetric.treasuryRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryMarketValue = BigDecimal.fromString("0")
         protocolMetric.nextEpochRebase = BigDecimal.fromString("0")
-        protocolMetric.nextDistributedOhm = BigDecimal.fromString("0")
         protocolMetric.nextDistributedHec = BigDecimal.fromString("0")
         protocolMetric.currentAPY = BigDecimal.fromString("0")
         protocolMetric.treasuryDaiRiskFreeValue = BigDecimal.fromString("0")
@@ -60,11 +56,8 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt): ProtocolMetric{
         protocolMetric.treasuryWFTMMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryMIMRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryMIMMarketValue = BigDecimal.fromString("0")
-        protocolMetric.treasuryOhmDaiPOL = BigDecimal.fromString("0")
-        protocolMetric.treasuryOhmUsdcPOL = BigDecimal.fromString("0")
         protocolMetric.treasuryHecDaiPOL = BigDecimal.fromString("0")
         protocolMetric.treasuryHecUsdcPOL = BigDecimal.fromString("0")
-        protocolMetric.holders = BigInt.fromString("0")
 
         protocolMetric.save()
     }
@@ -245,16 +238,13 @@ export function updateProtocolMetrics(blockNumber: BigInt): void{
     pm.totalSupply = getTotalSupply()
 
     //Circ Supply
-    pm.ohmCirculatingSupply = getCriculatingSupply(blockNumber, pm.totalSupply)
-    pm.hecCirculatingSupply = pm.ohmCirculatingSupply
+    pm.hecCirculatingSupply = getCriculatingSupply(blockNumber, pm.totalSupply)
 
     //sHec Supply
-    pm.sOhmCirculatingSupply = getShecSupply(blockNumber)
-    pm.sHecCirculatingSupply = pm.sOhmCirculatingSupply
+    pm.sHecCirculatingSupply = getShecSupply(blockNumber)
 
     //HEC Price
-    pm.ohmPrice = getHECUSDRate()
-    pm.hecPrice = pm.ohmPrice
+    pm.hecPrice = getHECUSDRate()
 
     //HEC Market Cap
     pm.marketCap = pm.hecCirculatingSupply.times(pm.hecPrice)
@@ -274,14 +264,11 @@ export function updateProtocolMetrics(blockNumber: BigInt): void{
     pm.treasuryWFTMMarketValue = mv_rfv[7]
     pm.treasuryMIMRiskFreeValue = mv_rfv[8]
     pm.treasuryMIMMarketValue = mv_rfv[9]
-    pm.treasuryOhmDaiPOL = mv_rfv[10]
-    pm.treasuryOhmUsdcPOL = mv_rfv[11]
     pm.treasuryHecDaiPOL = mv_rfv[10]
     pm.treasuryHecUsdcPOL = mv_rfv[11]
 
     // Rebase rewards, APY, rebase
-    pm.nextDistributedOhm = getNextHECRebase(blockNumber)
-    pm.nextDistributedHec = pm.nextDistributedOhm
+    pm.nextDistributedHec = getNextHECRebase(blockNumber)
     let apy_rebase = getAPY_Rebase(pm.sHecCirculatingSupply, pm.nextDistributedHec)
     pm.currentAPY = apy_rebase[0]
     pm.nextEpochRebase = apy_rebase[1]

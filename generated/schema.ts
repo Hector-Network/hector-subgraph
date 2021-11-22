@@ -18,7 +18,6 @@ export class Rebase extends Entity {
 
     this.set("transaction", Value.fromString(""));
     this.set("amount", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("stakedOhms", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("stakedHecs", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("percentage", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("contract", Value.fromString(""));
@@ -68,15 +67,6 @@ export class Rebase extends Entity {
 
   set amount(value: BigDecimal) {
     this.set("amount", Value.fromBigDecimal(value));
-  }
-
-  get stakedOhms(): BigDecimal {
-    let value = this.get("stakedOhms");
-    return value!.toBigDecimal();
-  }
-
-  set stakedOhms(value: BigDecimal) {
-    this.set("stakedOhms", Value.fromBigDecimal(value));
   }
 
   get stakedHecs(): BigDecimal {
@@ -131,19 +121,15 @@ export class ProtocolMetric extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
-    this.set("ohmCirculatingSupply", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("sOhmCirculatingSupply", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("hecCirculatingSupply", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("sHecCirculatingSupply", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("totalSupply", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("ohmPrice", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("hecPrice", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("marketCap", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("totalValueLocked", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryRiskFreeValue", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryMarketValue", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("nextEpochRebase", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("nextDistributedOhm", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("nextDistributedHec", Value.fromBigDecimal(BigDecimal.zero()));
     this.set(
       "treasuryDaiRiskFreeValue",
@@ -172,11 +158,8 @@ export class ProtocolMetric extends Entity {
     );
     this.set("treasuryMIMMarketValue", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("currentAPY", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("treasuryOhmDaiPOL", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("treasuryOhmUsdcPOL", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryHecDaiPOL", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryHecUsdcPOL", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("holders", Value.fromBigInt(BigInt.zero()));
   }
 
   save(): void {
@@ -214,24 +197,6 @@ export class ProtocolMetric extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get ohmCirculatingSupply(): BigDecimal {
-    let value = this.get("ohmCirculatingSupply");
-    return value!.toBigDecimal();
-  }
-
-  set ohmCirculatingSupply(value: BigDecimal) {
-    this.set("ohmCirculatingSupply", Value.fromBigDecimal(value));
-  }
-
-  get sOhmCirculatingSupply(): BigDecimal {
-    let value = this.get("sOhmCirculatingSupply");
-    return value!.toBigDecimal();
-  }
-
-  set sOhmCirculatingSupply(value: BigDecimal) {
-    this.set("sOhmCirculatingSupply", Value.fromBigDecimal(value));
-  }
-
   get hecCirculatingSupply(): BigDecimal {
     let value = this.get("hecCirculatingSupply");
     return value!.toBigDecimal();
@@ -257,15 +222,6 @@ export class ProtocolMetric extends Entity {
 
   set totalSupply(value: BigDecimal) {
     this.set("totalSupply", Value.fromBigDecimal(value));
-  }
-
-  get ohmPrice(): BigDecimal {
-    let value = this.get("ohmPrice");
-    return value!.toBigDecimal();
-  }
-
-  set ohmPrice(value: BigDecimal) {
-    this.set("ohmPrice", Value.fromBigDecimal(value));
   }
 
   get hecPrice(): BigDecimal {
@@ -320,15 +276,6 @@ export class ProtocolMetric extends Entity {
 
   set nextEpochRebase(value: BigDecimal) {
     this.set("nextEpochRebase", Value.fromBigDecimal(value));
-  }
-
-  get nextDistributedOhm(): BigDecimal {
-    let value = this.get("nextDistributedOhm");
-    return value!.toBigDecimal();
-  }
-
-  set nextDistributedOhm(value: BigDecimal) {
-    this.set("nextDistributedOhm", Value.fromBigDecimal(value));
   }
 
   get nextDistributedHec(): BigDecimal {
@@ -438,24 +385,6 @@ export class ProtocolMetric extends Entity {
     }
   }
 
-  get treasuryOhmDaiPOL(): BigDecimal {
-    let value = this.get("treasuryOhmDaiPOL");
-    return value!.toBigDecimal();
-  }
-
-  set treasuryOhmDaiPOL(value: BigDecimal) {
-    this.set("treasuryOhmDaiPOL", Value.fromBigDecimal(value));
-  }
-
-  get treasuryOhmUsdcPOL(): BigDecimal {
-    let value = this.get("treasuryOhmUsdcPOL");
-    return value!.toBigDecimal();
-  }
-
-  set treasuryOhmUsdcPOL(value: BigDecimal) {
-    this.set("treasuryOhmUsdcPOL", Value.fromBigDecimal(value));
-  }
-
   get treasuryHecDaiPOL(): BigDecimal {
     let value = this.get("treasuryHecDaiPOL");
     return value!.toBigDecimal();
@@ -472,15 +401,6 @@ export class ProtocolMetric extends Entity {
 
   set treasuryHecUsdcPOL(value: BigDecimal) {
     this.set("treasuryHecUsdcPOL", Value.fromBigDecimal(value));
-  }
-
-  get holders(): BigInt {
-    let value = this.get("holders");
-    return value!.toBigInt();
-  }
-
-  set holders(value: BigInt) {
-    this.set("holders", Value.fromBigInt(value));
   }
 }
 

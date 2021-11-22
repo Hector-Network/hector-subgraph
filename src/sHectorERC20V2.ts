@@ -16,8 +16,7 @@ export function rebaseFunction(call: RebaseCall): void {
 
         rebase = new Rebase(rebaseId)
         rebase.amount = toDecimal(call.inputs.profit_, 9)
-        rebase.stakedOhms = toDecimal(hec_contract.balanceOf(Address.fromString(STAKING_CONTRACT_V1)), 9)
-        rebase.stakedHecs = rebase.stakedOhms
+        rebase.stakedHecs = toDecimal(hec_contract.balanceOf(Address.fromString(STAKING_CONTRACT_V1)), 9)
         rebase.contract = STAKING_CONTRACT_V1
         rebase.percentage = rebase.amount.div(rebase.stakedHecs)
         rebase.transaction = rebaseId
