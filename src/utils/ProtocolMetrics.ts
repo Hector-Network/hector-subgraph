@@ -117,6 +117,12 @@ function getHECUSDCReserves(pair: UniswapV2Pair): BigDecimal[] {
     return [hecReserves, usdcReserves]
 }
 
+function getHECFRAXReserves(pair: UniswapV2Pair): BigDecimal[] {
+    let hecReserves = toDecimal(pair.getReserves().value0, 9)
+    let fraxReserves = toDecimal(pair.getReserves().value1, 18)
+    return [hecReserves, fraxReserves]
+}
+
 function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let daiERC20 = ERC20.bind(Address.fromString(ERC20DAI_CONTRACT))
     let usdcERC20 = ERC20.bind(Address.fromString(USDC_ERC20_CONTRACT))
@@ -163,8 +169,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         let hecfraxBalance = hecfraxPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecfraxTotalLP = toDecimal(hecfraxPair.totalSupply(), 18)
         hecfraxPOL = toDecimal(hecfraxBalance, 18).div(hecfraxTotalLP).times(BigDecimal.fromString("100"))
-        hecfraxValue = getPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECUSDCReserves)
-        hecfraxRFV = getDiscountedPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECUSDCReserves)
+        hecfraxValue = getPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECFRAXReserves)
+        hecfraxRFV = getDiscountedPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECFRAXReserves)
     }
 
     let stableValueDecimal = toDecimal(daiBalance, 18)
