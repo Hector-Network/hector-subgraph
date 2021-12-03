@@ -1,13 +1,13 @@
-import { Address, BigDecimal, BigInt, log} from '@graphprotocol/graph-ts'
-import { HectorERC20 } from '../../generated/HectorStakingV1/HectorERC20';
-import { sHectorERC20 } from '../../generated/HectorStakingV1/sHectorERC20';
-import { CirculatingSupply } from '../../generated/HectorStakingV1/CirculatingSupply';
-import { ERC20 } from '../../generated/HectorStakingV1/ERC20';
-import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
-import { HectorStaking } from '../../generated/HectorStakingV1/HectorStaking';
-import { ethereum } from '@graphprotocol/graph-ts'
+import {Address, BigDecimal, BigInt, log} from '@graphprotocol/graph-ts'
+import {HectorERC20} from '../../generated/HectorStakingV1/HectorERC20';
+import {sHectorERC20} from '../../generated/HectorStakingV1/sHectorERC20';
+import {CirculatingSupply} from '../../generated/HectorStakingV1/CirculatingSupply';
+import {ERC20} from '../../generated/HectorStakingV1/ERC20';
+import {UniswapV2Pair} from '../../generated/HectorStakingV1/UniswapV2Pair';
+import {HectorStaking} from '../../generated/HectorStakingV1/HectorStaking';
+import {ethereum} from '@graphprotocol/graph-ts'
 
-import { ProtocolMetric, LastBlock } from '../../generated/schema'
+import {ProtocolMetric, LastBlock} from '../../generated/schema'
 import {
     CIRCULATING_SUPPLY_CONTRACT,
     CIRCULATING_SUPPLY_CONTRACT_BLOCK,
@@ -24,13 +24,18 @@ import {
     STAKING_CONTRACT_V2_BLOCK,
     STAKING_CONTRACT_V2,
     SHEC_ERC20_CONTRACT_V2_BLOCK,
-    SHEC_ERC20_CONTRACT_V2, LOCKED_ADDRESS, MIM_ERC20_CONTRACT
+    SHEC_ERC20_CONTRACT_V2,
+    LOCKED_ADDRESS,
+    MIM_ERC20_CONTRACT,
+    FRAX_ERC20_CONTRACT,
+    SPOOKY_HECFRAX_PAIR,
+    SPOOKY_HECFRAX_PAIR_BLOCK
 } from './Constants';
-import { toDecimal } from './Decimals';
-import { getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate } from './Price';
+import {toDecimal} from './Decimals';
+import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate} from './Price';
 
 
-export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric{
+export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
     let id = blockNumber.minus(blockNumber.mod(BigInt.fromString("16000")));
 
     let protocolMetric = ProtocolMetric.load(id.toString())
@@ -56,8 +61,11 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryWFTMMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryMIMRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryMIMMarketValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryFRAXRiskFreeValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryFRAXMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryHecDaiPOL = BigDecimal.fromString("0")
         protocolMetric.treasuryHecUsdcPOL = BigDecimal.fromString("0")
+        protocolMetric.treasuryHecFraxPOL = BigDecimal.fromString("0")
 
         protocolMetric.save()
     }
@@ -65,16 +73,16 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
 }
 
 
-function getTotalSupply(): BigDecimal{
+function getTotalSupply(): BigDecimal {
     let hec_contract = HectorERC20.bind(Address.fromString(HEC_ERC20_CONTRACT))
     let total_supply = toDecimal(hec_contract.totalSupply(), 9)
     log.debug("Total Supply {}", [total_supply.toString()])
     return total_supply
 }
 
-function getCriculatingSupply(blockNumber: BigInt, total_supply: BigDecimal): BigDecimal{
+function getCriculatingSupply(blockNumber: BigInt, total_supply: BigDecimal): BigDecimal {
     let circ_supply: BigDecimal
-    if(blockNumber.gt(BigInt.fromString(CIRCULATING_SUPPLY_CONTRACT_BLOCK))){
+    if (blockNumber.gt(BigInt.fromString(CIRCULATING_SUPPLY_CONTRACT_BLOCK))) {
         let circulatingsupply_contract = CirculatingSupply.bind(Address.fromString(CIRCULATING_SUPPLY_CONTRACT))
         circ_supply = toDecimal(circulatingsupply_contract.HECCirculatingSupply(), 9)
     } else {
@@ -84,15 +92,15 @@ function getCriculatingSupply(blockNumber: BigInt, total_supply: BigDecimal): Bi
     return circ_supply
 }
 
-function getShecSupply(blockNumber: BigInt): BigDecimal{
+function getShecSupply(blockNumber: BigInt): BigDecimal {
     let shec_contract_v1 = sHectorERC20.bind(Address.fromString(SHEC_ERC20_CONTRACT_V1))
     let shec_supply = toDecimal(shec_contract_v1.circulatingSupply(), 9)
 
-    if(blockNumber.gt(BigInt.fromString(SHEC_ERC20_CONTRACT_V2_BLOCK))){
+    if (blockNumber.gt(BigInt.fromString(SHEC_ERC20_CONTRACT_V2_BLOCK))) {
         let shec_contract_v2 = sHectorERC20.bind(Address.fromString(SHEC_ERC20_CONTRACT_V2))
         shec_supply = shec_supply.plus(toDecimal(shec_contract_v2.circulatingSupply(), 9))
     }
-    
+
     log.debug("sHEC Supply {}", [shec_supply.toString()])
     return shec_supply
 }
@@ -109,18 +117,21 @@ function getHECUSDCReserves(pair: UniswapV2Pair): BigDecimal[] {
     return [hecReserves, usdcReserves]
 }
 
-function getMV_RFV(blockNumber: BigInt): BigDecimal[]{
+function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let daiERC20 = ERC20.bind(Address.fromString(ERC20DAI_CONTRACT))
     let usdcERC20 = ERC20.bind(Address.fromString(USDC_ERC20_CONTRACT))
     let wftmERC20 = ERC20.bind(Address.fromString(WFTM_ERC20_CONTRACT))
     let mimERC20 = ERC20.bind(Address.fromString(MIM_ERC20_CONTRACT))
+    let fraxERC20 = ERC20.bind(Address.fromString(FRAX_ERC20_CONTRACT))
 
     let hecdaiPair = UniswapV2Pair.bind(Address.fromString(SPOOKY_HECDAI_PAIR))
+    let hecfraxPair = UniswapV2Pair.bind(Address.fromString(SPOOKY_HECFRAX_PAIR))
     let hecusdcPair = UniswapV2Pair.bind(Address.fromString(SPIRIT_HECUSDC_PAIR))
 
     let daiBalance = daiERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let usdcBalance = usdcERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let mimBalance = mimERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let fraxBalance = fraxERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let wftmBalance = wftmERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
 
@@ -136,7 +147,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[]{
     let hecusdcValue = BigDecimal.fromString('0');
     let hecusdcRFV = BigDecimal.fromString('0')
     let hecusdcPOL = BigDecimal.fromString('0')
-    if(blockNumber.gt(BigInt.fromString(SPIRIT_HECUSDC_PAIR_BLOCK))){
+    if (blockNumber.gt(BigInt.fromString(SPIRIT_HECUSDC_PAIR_BLOCK))) {
         let hecusdcBalance = hecusdcPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecusdcTotalLP = toDecimal(hecusdcPair.totalSupply(), 18)
         hecusdcPOL = toDecimal(hecusdcBalance, 18).div(hecusdcTotalLP).times(BigDecimal.fromString("100"))
@@ -144,10 +155,25 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[]{
         hecusdcRFV = getDiscountedPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR, getHECUSDCReserves)
     }
 
-    let stableValueDecimal = toDecimal(daiBalance, 18).plus(toDecimal(usdcBalance, 6)).plus(toDecimal(mimBalance, 18))
+    //HECFRAX
+    let hecfraxValue = BigDecimal.fromString('0');
+    let hecfraxRFV = BigDecimal.fromString('0')
+    let hecfraxPOL = BigDecimal.fromString('0')
+    if (blockNumber.gt(BigInt.fromString(SPOOKY_HECFRAX_PAIR_BLOCK))) {
+        let hecfraxBalance = hecfraxPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
+        let hecfraxTotalLP = toDecimal(hecfraxPair.totalSupply(), 18)
+        hecfraxPOL = toDecimal(hecfraxBalance, 18).div(hecfraxTotalLP).times(BigDecimal.fromString("100"))
+        hecfraxValue = getPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECUSDCReserves)
+        hecfraxRFV = getDiscountedPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECUSDCReserves)
+    }
 
-    let lpValue = hecdaiValue.plus(hecusdcValue)
-    let rfvLpValue = hecdaiRFV.plus(hecusdcRFV)
+    let stableValueDecimal = toDecimal(daiBalance, 18)
+        .plus(toDecimal(usdcBalance, 6))
+        .plus(toDecimal(mimBalance, 18))
+        .plus(toDecimal(fraxBalance, 18))
+
+    let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue)
+    let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue)
     let rfv = stableValueDecimal.plus(rfvLpValue)
@@ -156,40 +182,48 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[]{
     log.debug("Treasury RFV {}", [rfv.toString()])
     log.debug("Treasury DAI value {}", [toDecimal(daiBalance, 18).toString()])
     log.debug("Treasury USDC value {}", [toDecimal(usdcBalance, 6).toString()])
+    log.debug("Treasury MIM value {}", [toDecimal(mimBalance, 18).toString()])
+    log.debug("Treasury FRAX value {}", [toDecimal(fraxBalance, 18).toString()])
     log.debug("Treasury WFTM value {}", [wftmValue.toString()])
     log.debug("Treasury HEC-DAI RFV {}", [hecdaiRFV.toString()])
     log.debug("Treasury HEC-USDC RFV {}", [hecusdcRFV.toString()])
+    log.debug("Treasury HEC-FRAX RFV {}", [hecfraxRFV.toString()])
 
     return [
-        mv, 
+        mv,
         rfv,
         // treasuryDaiRiskFreeValue = DAI RFV + DAI
         hecdaiRFV.plus(toDecimal(daiBalance, 18)),
-        // treasuryFraxRiskFreeValue = USDC RFV + USDC
+        // treasuryUsdcRiskFreeValue = USDC RFV + USDC
         hecusdcRFV.plus(toDecimal(usdcBalance, 6)),
         // treasuryDaiMarketValue = DAI LP + DAI
         hecdaiValue.plus(toDecimal(daiBalance, 18)),
-        // treasuryFraxMarketValue = USDC LP + USDC
+        // treasuryUsdcMarketValue = USDC LP + USDC
         hecusdcValue.plus(toDecimal(usdcBalance, 6)),
         wftmValue,
         wftmValue,
         toDecimal(mimBalance, 18),
         toDecimal(mimBalance, 18),
+        // treasuryFraxMarketValue = Frax LP + FRAX
+        hecfraxValue.plus(toDecimal(fraxBalance, 18)),
+        // treasuryFraxRiskFreeValue = FRAX RFV + FRAX
+        hecfraxRFV.plus(toDecimal(fraxBalance, 18)),
         // POL
         hecdaiPOL,
         hecusdcPOL,
+        hecfraxPOL
     ]
 }
 
-function getNextHECRebase(blockNumber: BigInt): BigDecimal{
+function getNextHECRebase(blockNumber: BigInt): BigDecimal {
     let staking_contract_v1 = HectorStaking.bind(Address.fromString(STAKING_CONTRACT_V1))
-    let distribution_v1 = toDecimal(staking_contract_v1.epoch().value3,9)
+    let distribution_v1 = toDecimal(staking_contract_v1.epoch().value3, 9)
     log.debug("next_distribution v1 {}", [distribution_v1.toString()])
     let next_distribution = distribution_v1
 
-    if(blockNumber.gt(BigInt.fromString(STAKING_CONTRACT_V2_BLOCK))) {
+    if (blockNumber.gt(BigInt.fromString(STAKING_CONTRACT_V2_BLOCK))) {
         let staking_contract_v2 = HectorStaking.bind(Address.fromString(STAKING_CONTRACT_V2))
-        let distribution_v2 = toDecimal(staking_contract_v2.epoch().value3,9)
+        let distribution_v2 = toDecimal(staking_contract_v2.epoch().value3, 9)
         log.debug("next_distribution v2 {}", [distribution_v2.toString()])
         next_distribution = next_distribution.plus(distribution_v2)
     }
@@ -199,13 +233,13 @@ function getNextHECRebase(blockNumber: BigInt): BigDecimal{
     return next_distribution
 }
 
-function getAPY_Rebase(sHEC: BigDecimal, distributedHEC: BigDecimal): BigDecimal[]{
+function getAPY_Rebase(sHEC: BigDecimal, distributedHEC: BigDecimal): BigDecimal[] {
     let nextEpochRebase = sHEC.gt(BigDecimal.fromString('0'))
         ? distributedHEC.div(sHEC).times(BigDecimal.fromString("100"))
         : BigDecimal.fromString('0');
 
     let nextEpochRebase_number = parseFloat(nextEpochRebase.toString())
-    let currentAPY = Math.pow(((Math.min(90,nextEpochRebase_number) / 100) + 1), (365*3)-1)*100
+    let currentAPY = Math.pow(((Math.min(90, nextEpochRebase_number) / 100) + 1), (365 * 3) - 1) * 100
 
     let currentAPYdecimal = BigDecimal.fromString(currentAPY.toString())
 
@@ -215,14 +249,14 @@ function getAPY_Rebase(sHEC: BigDecimal, distributedHEC: BigDecimal): BigDecimal
     return [currentAPYdecimal, nextEpochRebase]
 }
 
-function getRunway(sHec: BigDecimal, rfv: BigDecimal, rebase: BigDecimal): BigDecimal{
+function getRunway(sHec: BigDecimal, rfv: BigDecimal, rebase: BigDecimal): BigDecimal {
     let runwayCurrent = BigDecimal.fromString("0")
 
-    if(sHec.gt(BigDecimal.fromString("0")) && rfv.gt(BigDecimal.fromString("0")) &&  rebase.gt(BigDecimal.fromString("0"))){
+    if (sHec.gt(BigDecimal.fromString("0")) && rfv.gt(BigDecimal.fromString("0")) && rebase.gt(BigDecimal.fromString("0"))) {
         let treasury_runway = parseFloat(rfv.div(sHec).toString())
 
-        let nextEpochRebase_number = parseFloat(rebase.toString())/100
-        let runwayCurrent_num = (Math.log(treasury_runway) / Math.log(1+nextEpochRebase_number))/3;
+        let nextEpochRebase_number = parseFloat(rebase.toString()) / 100
+        let runwayCurrent_num = (Math.log(treasury_runway) / Math.log(1 + nextEpochRebase_number)) / 3;
 
         runwayCurrent = BigDecimal.fromString(runwayCurrent_num.toString())
     }
@@ -231,7 +265,7 @@ function getRunway(sHec: BigDecimal, rfv: BigDecimal, rebase: BigDecimal): BigDe
 }
 
 
-export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): void{
+export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): void {
     let pm = loadOrCreateProtocolMetric(blockNumber, timestamp);
 
     //Total Supply
@@ -264,8 +298,11 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryWFTMMarketValue = mv_rfv[7]
     pm.treasuryMIMRiskFreeValue = mv_rfv[8]
     pm.treasuryMIMMarketValue = mv_rfv[9]
-    pm.treasuryHecDaiPOL = mv_rfv[10]
-    pm.treasuryHecUsdcPOL = mv_rfv[11]
+    pm.treasuryFRAXRiskFreeValue = mv_rfv[10]
+    pm.treasuryFRAXMarketValue = mv_rfv[11]
+    pm.treasuryHecDaiPOL = mv_rfv[12]
+    pm.treasuryHecUsdcPOL = mv_rfv[13]
+    pm.treasuryHecFraxPOL = mv_rfv[14]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)

@@ -26,14 +26,17 @@ type ProtocolMetric @entity {
   treasuryUsdcRiskFreeValue: BigDecimal!
   treasuryWFTMRiskFreeValue: BigDecimal!
   treasuryMIMRiskFreeValue: BigDecimal!
+  treasuryFRAXRiskFreeValue: BigDecimal!
   treasuryDaiMarketValue: BigDecimal!
   treasuryUsdcMarketValue: BigDecimal!
   treasuryWFTMMarketValue: BigDecimal!
   treasuryMIMMarketValue: BigDecimal!
+  treasuryFRAXMarketValue: BigDecimal!
   currentAPY: BigDecimal!
   runwayCurrent: BigDecimal
   treasuryHecDaiPOL: BigDecimal!
   treasuryHecUsdcPOL: BigDecimal!
+  treasuryHecFraxPOL: BigDecimal!
 }
 
 type LastBlock @entity {
