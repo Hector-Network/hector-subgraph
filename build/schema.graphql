@@ -20,6 +20,7 @@ type ProtocolMetric @entity {
   totalValueLocked: BigDecimal!
   treasuryRiskFreeValue: BigDecimal!
   treasuryMarketValue: BigDecimal!
+  treasuryInvestments: BigDecimal!
   nextEpochRebase: BigDecimal!
   nextDistributedHec: BigDecimal!
   treasuryDaiRiskFreeValue: BigDecimal!

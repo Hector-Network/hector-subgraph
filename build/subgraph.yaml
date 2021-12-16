@@ -17,25 +17,27 @@ dataSources:
         - HectorStaking
       abis:
         - name: HectorStaking
-          file: HectorStakingV1\abis\HectorStaking.json
+          file: HectorStakingV1/abis/HectorStaking.json
         - name: StakingHelper
-          file: HectorStakingV1\abis\StakingHelper.json
+          file: HectorStakingV1/abis/StakingHelper.json
         - name: sHectorERC20
-          file: HectorStakingV1\abis\sHectorERC20.json
+          file: HectorStakingV1/abis/sHectorERC20.json
         - name: HectorERC20
-          file: HectorStakingV1\abis\HectorERC20.json
+          file: HectorStakingV1/abis/HectorERC20.json
         - name: UniswapV2Pair
-          file: HectorStakingV1\abis\UniswapV2Pair.json
+          file: HectorStakingV1/abis/UniswapV2Pair.json
         - name: ERC20
-          file: HectorStakingV1\abis\ERC20.json
+          file: HectorStakingV1/abis/ERC20.json
         - name: CirculatingSupply
-          file: HectorStakingV1\abis\CirculatingSupply.json
+          file: HectorStakingV1/abis/CirculatingSupply.json
+        - name: CurveGaugeAllocator
+          file: HectorStakingV1/abis/CurveGaugeAllocator.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake
         - function: unstake(uint256,bool)
           handler: handleUnstake
-      file: HectorStakingV1\HectorStakingV1.wasm
+      file: HectorStakingV1/HectorStakingV1.wasm
   - kind: ethereum/contract
     name: HectorStakingV2
     network: fantom
@@ -51,25 +53,27 @@ dataSources:
         - HectorStaking
       abis:
         - name: HectorStaking
-          file: HectorStakingV2\abis\HectorStaking.json
+          file: HectorStakingV2/abis/HectorStaking.json
         - name: StakingHelper
-          file: HectorStakingV2\abis\StakingHelper.json
+          file: HectorStakingV2/abis/StakingHelper.json
         - name: sHectorERC20
-          file: HectorStakingV2\abis\sHectorERC20.json
+          file: HectorStakingV2/abis/sHectorERC20.json
         - name: HectorERC20
-          file: HectorStakingV2\abis\HectorERC20.json
+          file: HectorStakingV2/abis/HectorERC20.json
         - name: UniswapV2Pair
-          file: HectorStakingV2\abis\UniswapV2Pair.json
+          file: HectorStakingV2/abis/UniswapV2Pair.json
         - name: ERC20
-          file: HectorStakingV2\abis\ERC20.json
+          file: HectorStakingV2/abis/ERC20.json
         - name: CirculatingSupply
-          file: HectorStakingV2\abis\CirculatingSupply.json
+          file: HectorStakingV2/abis/CirculatingSupply.json
+        - name: CurveGaugeAllocator
+          file: HectorStakingV2/abis/CurveGaugeAllocator.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake
         - function: unstake(uint256,bool)
           handler: handleUnstake
-      file: HectorStakingV1\HectorStakingV1.wasm
+      file: HectorStakingV1/HectorStakingV1.wasm
   - kind: ethereum/contract
     name: sHectorERC20V1
     network: fantom
@@ -85,15 +89,15 @@ dataSources:
         - sHectorERC20
       abis:
         - name: sHectorERC20
-          file: sHectorERC20V1\abis\sHectorERC20.json
+          file: sHectorERC20V1/abis/sHectorERC20.json
         - name: HectorERC20
-          file: sHectorERC20V1\abis\HectorERC20.json
+          file: sHectorERC20V1/abis/HectorERC20.json
         - name: UniswapV2Pair
-          file: sHectorERC20V1\abis\UniswapV2Pair.json
+          file: sHectorERC20V1/abis/UniswapV2Pair.json
       callHandlers:
         - function: rebase(uint256,uint256)
           handler: rebaseFunction
-      file: sHectorERC20V1\sHectorERC20V1.wasm
+      file: sHectorERC20V1/sHectorERC20V1.wasm
   - kind: ethereum/contract
     name: sHectorERC20V2
     network: fantom
@@ -109,12 +113,12 @@ dataSources:
         - sHectorERC20
       abis:
         - name: sHectorERC20
-          file: sHectorERC20V2\abis\sHectorERC20.json
+          file: sHectorERC20V2/abis/sHectorERC20.json
         - name: HectorERC20
-          file: sHectorERC20V2\abis\HectorERC20.json
+          file: sHectorERC20V2/abis/HectorERC20.json
         - name: UniswapV2Pair
-          file: sHectorERC20V2\abis\UniswapV2Pair.json
+          file: sHectorERC20V2/abis/UniswapV2Pair.json
       callHandlers:
         - function: rebase(uint256,uint256)
           handler: rebaseFunction
-      file: sHectorERC20V2\sHectorERC20V2.wasm
+      file: sHectorERC20V2/sHectorERC20V2.wasm

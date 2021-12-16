@@ -30,6 +30,8 @@ dataSources:
           file: ./abis/ERC20.json
         - name: CirculatingSupply
           file: ./abis/CirculatingSupply.json
+        - name: CurveGaugeAllocator
+          file: ./abis/CurveGaugeAllocator.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake
@@ -64,6 +66,8 @@ dataSources:
           file: ./abis/ERC20.json
         - name: CirculatingSupply
           file: ./abis/CirculatingSupply.json
+        - name: CurveGaugeAllocator
+          file: ./abis/CurveGaugeAllocator.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake

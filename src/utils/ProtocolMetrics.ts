@@ -1,4 +1,5 @@
 import {Address, BigDecimal, BigInt, log} from '@graphprotocol/graph-ts'
+import { CurveGaugeAllocator } from '../../generated/HectorStakingV1/CurveGaugeAllocator'
 import {HectorERC20} from '../../generated/HectorStakingV1/HectorERC20';
 import {sHectorERC20} from '../../generated/HectorStakingV1/sHectorERC20';
 import {CirculatingSupply} from '../../generated/HectorStakingV1/CirculatingSupply';
@@ -29,7 +30,9 @@ import {
     MIM_ERC20_CONTRACT,
     FRAX_ERC20_CONTRACT,
     SPOOKY_HECFRAX_PAIR,
-    SPOOKY_HECFRAX_PAIR_BLOCK
+    SPOOKY_HECFRAX_PAIR_BLOCK,
+    CURVE_GAUGE_ALLOCATOR_CONTRACT_BLOCK,
+    CURVE_GAUGE_ALLOCATOR_CONTRACT
 } from './Constants';
 import {toDecimal} from './Decimals';
 import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate} from './Price';
@@ -50,6 +53,7 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.totalValueLocked = BigDecimal.fromString("0")
         protocolMetric.treasuryRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryMarketValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryInvestments = BigDecimal.fromString("0")
         protocolMetric.nextEpochRebase = BigDecimal.fromString("0")
         protocolMetric.nextDistributedHec = BigDecimal.fromString("0")
         protocolMetric.currentAPY = BigDecimal.fromString("0")
@@ -173,10 +177,19 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecfraxRFV = getDiscountedPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECFRAXReserves)
     }
 
+    let investments = BigDecimal.fromString('0')
+    if (blockNumber.gt(BigInt.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT_BLOCK))) {
+        let curveGauge = CurveGaugeAllocator.bind(Address.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT))
+        let daiInvestments = curveGauge.tokenInfo(Address.fromString(ERC20DAI_CONTRACT)).value3
+        let usdcInvestments = curveGauge.tokenInfo(Address.fromString(USDC_ERC20_CONTRACT)).value3
+        investments = toDecimal(daiInvestments, 18).plus(toDecimal(usdcInvestments, 6))
+    }
+
     let stableValueDecimal = toDecimal(daiBalance, 18)
         .plus(toDecimal(usdcBalance, 6))
         .plus(toDecimal(mimBalance, 18))
         .plus(toDecimal(fraxBalance, 18))
+        .plus(investments)
 
     let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV)
@@ -217,7 +230,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         // POL
         hecdaiPOL,
         hecusdcPOL,
-        hecfraxPOL
+        hecfraxPOL,
+        // Investing
+        investments
     ]
 }
 
@@ -309,6 +324,7 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryHecDaiPOL = mv_rfv[12]
     pm.treasuryHecUsdcPOL = mv_rfv[13]
     pm.treasuryHecFraxPOL = mv_rfv[14]
+    pm.treasuryInvestments = mv_rfv[15]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
