@@ -28,11 +28,13 @@ type ProtocolMetric @entity {
   treasuryWFTMRiskFreeValue: BigDecimal!
   treasuryMIMRiskFreeValue: BigDecimal!
   treasuryFRAXRiskFreeValue: BigDecimal!
+  treasuryGOHMRiskFreeValue: BigDecimal!
   treasuryDaiMarketValue: BigDecimal!
   treasuryUsdcMarketValue: BigDecimal!
   treasuryWFTMMarketValue: BigDecimal!
   treasuryMIMMarketValue: BigDecimal!
   treasuryFRAXMarketValue: BigDecimal!
+  treasuryGOHMMarketValue: BigDecimal!
   currentAPY: BigDecimal!
   runwayCurrent: BigDecimal
   treasuryHecDaiPOL: BigDecimal!

@@ -32,10 +32,12 @@ import {
     SPOOKY_HECFRAX_PAIR,
     SPOOKY_HECFRAX_PAIR_BLOCK,
     CURVE_GAUGE_ALLOCATOR_CONTRACT_BLOCK,
-    CURVE_GAUGE_ALLOCATOR_CONTRACT
+    CURVE_GAUGE_ALLOCATOR_CONTRACT,
+    SPIRIT_HECGOHM_PAIR_BLOCK,
+    SPIRIT_HECGOHM_PAIR
 } from './Constants';
 import {toDecimal} from './Decimals';
-import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate} from './Price';
+import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate, getGOHMUSDRate} from './Price';
 
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -67,6 +69,8 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryMIMMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryFRAXRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryFRAXMarketValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryGOHMRiskFreeValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryGOHMMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryHecDaiPOL = BigDecimal.fromString("0")
         protocolMetric.treasuryHecUsdcPOL = BigDecimal.fromString("0")
         protocolMetric.treasuryHecFraxPOL = BigDecimal.fromString("0")
@@ -110,21 +114,31 @@ function getShecSupply(blockNumber: BigInt): BigDecimal {
 }
 
 function getHECDAIReserves(pair: UniswapV2Pair): BigDecimal[] {
-    let hecReserves = toDecimal(pair.getReserves().value0, 9)
-    let daiReserves = toDecimal(pair.getReserves().value1, 18)
+    let reserves = pair.getReserves()
+    let hecReserves = toDecimal(reserves.value0, 9)
+    let daiReserves = toDecimal(reserves.value1, 18)
     return [hecReserves, daiReserves]
 }
 
 function getHECUSDCReserves(pair: UniswapV2Pair): BigDecimal[] {
-    let usdcReserves = toDecimal(pair.getReserves().value0, 6)
-    let hecReserves = toDecimal(pair.getReserves().value1, 9)
+    let reserves = pair.getReserves()
+    let usdcReserves = toDecimal(reserves.value0, 6)
+    let hecReserves = toDecimal(reserves.value1, 9)
     return [hecReserves, usdcReserves]
 }
 
 function getHECFRAXReserves(pair: UniswapV2Pair): BigDecimal[] {
-    let hecReserves = toDecimal(pair.getReserves().value0, 9)
-    let fraxReserves = toDecimal(pair.getReserves().value1, 18)
+    let reserves = pair.getReserves()
+    let hecReserves = toDecimal(reserves.value0, 9)
+    let fraxReserves = toDecimal(reserves.value1, 18)
     return [hecReserves, fraxReserves]
+}
+
+function getHECGOHMReserves(pair: UniswapV2Pair): BigDecimal[] {
+    let reserves = pair.getReserves()
+    let hecReserves = toDecimal(reserves.value0, 9)
+    let gohmReserves = toDecimal(reserves.value1, 18)
+    return [hecReserves, gohmReserves]
 }
 
 function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
@@ -137,6 +151,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let hecdaiPair = UniswapV2Pair.bind(Address.fromString(SPOOKY_HECDAI_PAIR))
     let hecfraxPair = UniswapV2Pair.bind(Address.fromString(SPOOKY_HECFRAX_PAIR))
     let hecusdcPair = UniswapV2Pair.bind(Address.fromString(SPIRIT_HECUSDC_PAIR))
+    let hecgohmPair = UniswapV2Pair.bind(Address.fromString(SPIRIT_HECGOHM_PAIR))
 
     let daiBalance = daiERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let usdcBalance = usdcERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
@@ -145,13 +160,16 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let wftmBalance = wftmERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
 
+    let hecusdRate = getHECUSDRate()
+
     //HECDAI
     let hecdaiBalance = hecdaiPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let hecdaiLockedBalance = hecdaiPair.balanceOf(Address.fromString(LOCKED_ADDRESS))
     let hecdaiTotalLP = toDecimal(hecdaiPair.totalSupply(), 18)
+    let hecdaiReserves = getHECDAIReserves(hecdaiPair)
     let hecdaiPOL = toDecimal(hecdaiBalance.plus(hecdaiLockedBalance), 18).div(hecdaiTotalLP).times(BigDecimal.fromString("100"))
-    let hecdaiValue = getPairUSD(hecdaiBalance, SPOOKY_HECDAI_PAIR, getHECDAIReserves)
-    let hecdaiRFV = getDiscountedPairUSD(hecdaiBalance, SPOOKY_HECDAI_PAIR, getHECDAIReserves)
+    let hecdaiValue = getPairUSD(hecdaiBalance, hecdaiTotalLP, hecdaiReserves, hecusdRate, BigDecimal.fromString('1'))
+    let hecdaiRFV = getDiscountedPairUSD(hecdaiBalance, hecdaiTotalLP, hecdaiReserves, BigDecimal.fromString('1'))
 
     //HECUSDC
     let hecusdcValue = BigDecimal.fromString('0');
@@ -160,9 +178,10 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     if (blockNumber.gt(BigInt.fromString(SPIRIT_HECUSDC_PAIR_BLOCK))) {
         let hecusdcBalance = hecusdcPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecusdcTotalLP = toDecimal(hecusdcPair.totalSupply(), 18)
+        let hecusdcReserves = getHECUSDCReserves(hecusdcPair)
         hecusdcPOL = toDecimal(hecusdcBalance, 18).div(hecusdcTotalLP).times(BigDecimal.fromString("100"))
-        hecusdcValue = getPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR, getHECUSDCReserves)
-        hecusdcRFV = getDiscountedPairUSD(hecusdcBalance, SPIRIT_HECUSDC_PAIR, getHECUSDCReserves)
+        hecusdcValue = getPairUSD(hecusdcBalance, hecusdcTotalLP, hecusdcReserves, hecusdRate, BigDecimal.fromString('1'))
+        hecusdcRFV = getDiscountedPairUSD(hecusdcBalance, hecusdcTotalLP, hecusdcReserves, BigDecimal.fromString('1'))
     }
 
     //HECFRAX
@@ -172,9 +191,23 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     if (blockNumber.gt(BigInt.fromString(SPOOKY_HECFRAX_PAIR_BLOCK))) {
         let hecfraxBalance = hecfraxPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecfraxTotalLP = toDecimal(hecfraxPair.totalSupply(), 18)
+        let hecfraxReserves = getHECFRAXReserves(hecfraxPair)
         hecfraxPOL = toDecimal(hecfraxBalance, 18).div(hecfraxTotalLP).times(BigDecimal.fromString("100"))
-        hecfraxValue = getPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECFRAXReserves)
-        hecfraxRFV = getDiscountedPairUSD(hecfraxBalance, SPOOKY_HECFRAX_PAIR, getHECFRAXReserves)
+        hecfraxValue = getPairUSD(hecfraxBalance, hecfraxTotalLP, hecfraxReserves, hecusdRate, BigDecimal.fromString('1'))
+        hecfraxRFV = getDiscountedPairUSD(hecfraxBalance, hecfraxTotalLP, hecfraxReserves, BigDecimal.fromString('1'))
+    }
+
+    //HECGOHM
+    let hecgohmValue = BigDecimal.fromString("0")
+    let hecgohmRFV = BigDecimal.fromString("0")
+    let hecgohmPOL = BigDecimal.fromString('0')
+    if (blockNumber.gt(BigInt.fromString(SPIRIT_HECGOHM_PAIR_BLOCK))) {
+        let hecgohmBalance = hecgohmPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
+        let hecgohmTotalLP = toDecimal(hecgohmPair.totalSupply(), 18)
+        let hecgohmReserves = getHECGOHMReserves(hecgohmPair)
+        hecgohmPOL = toDecimal(hecgohmBalance, 18).div(hecgohmTotalLP).times(BigDecimal.fromString('100'))
+        hecgohmValue = getPairUSD(hecgohmBalance, hecgohmTotalLP, hecgohmReserves, hecusdRate, getGOHMUSDRate())
+        hecgohmRFV = getDiscountedPairUSD(hecgohmBalance, hecdaiTotalLP, hecgohmReserves, BigDecimal.fromString('47.66')) // NOTE: There is no way to get OHM index on other chains :(
     }
 
     let investments = BigDecimal.fromString('0')
@@ -191,14 +224,15 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         .plus(toDecimal(fraxBalance, 18))
         .plus(investments)
 
-    let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue)
-    let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV)
+    let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue).plus(hecgohmValue)
+    let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue)
     let rfv = stableValueDecimal.plus(rfvLpValue)
 
     log.debug("Treasury Market Value {}", [mv.toString()])
     log.debug("Treasury RFV {}", [rfv.toString()])
+    log.debug("Treasury Investments {}", [investments.toString()])
     log.debug("Treasury DAI value {}", [toDecimal(daiBalance, 18).toString()])
     log.debug("Treasury USDC value {}", [toDecimal(usdcBalance, 6).toString()])
     log.debug("Treasury MIM value {}", [toDecimal(mimBalance, 18).toString()])
@@ -207,6 +241,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     log.debug("Treasury HEC-DAI RFV {}", [hecdaiRFV.toString()])
     log.debug("Treasury HEC-USDC RFV {}", [hecusdcRFV.toString()])
     log.debug("Treasury HEC-FRAX RFV {}", [hecfraxRFV.toString()])
+    log.debug("Treasury HEC-GOHM RFV {}", [hecgohmRFV.toString()])
 
     return [
         mv,
@@ -227,6 +262,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecfraxValue.plus(toDecimal(fraxBalance, 18)),
         // treasuryFraxRiskFreeValue = FRAX RFV + FRAX
         hecfraxRFV.plus(toDecimal(fraxBalance, 18)),
+        hecgohmValue,
+        hecgohmRFV,
         // POL
         hecdaiPOL,
         hecusdcPOL,
@@ -319,12 +356,14 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryWFTMMarketValue = mv_rfv[7]
     pm.treasuryMIMRiskFreeValue = mv_rfv[8]
     pm.treasuryMIMMarketValue = mv_rfv[9]
-    pm.treasuryFRAXRiskFreeValue = mv_rfv[10]
-    pm.treasuryFRAXMarketValue = mv_rfv[11]
-    pm.treasuryHecDaiPOL = mv_rfv[12]
-    pm.treasuryHecUsdcPOL = mv_rfv[13]
-    pm.treasuryHecFraxPOL = mv_rfv[14]
-    pm.treasuryInvestments = mv_rfv[15]
+    pm.treasuryFRAXMarketValue = mv_rfv[10]
+    pm.treasuryFRAXRiskFreeValue = mv_rfv[11]
+    pm.treasuryGOHMMarketValue = mv_rfv[12]
+    pm.treasuryGOHMRiskFreeValue = mv_rfv[13]
+    pm.treasuryHecDaiPOL = mv_rfv[14]
+    pm.treasuryHecUsdcPOL = mv_rfv[15]
+    pm.treasuryHecFraxPOL = mv_rfv[16]
+    pm.treasuryInvestments = mv_rfv[17]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
