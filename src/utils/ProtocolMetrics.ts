@@ -207,7 +207,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         let hecgohmReserves = getHECGOHMReserves(hecgohmPair)
         hecgohmPOL = toDecimal(hecgohmBalance, 18).div(hecgohmTotalLP).times(BigDecimal.fromString('100'))
         hecgohmValue = getPairUSD(hecgohmBalance, hecgohmTotalLP, hecgohmReserves, hecusdRate, getGOHMUSDRate())
-        hecgohmRFV = getDiscountedPairUSD(hecgohmBalance, hecdaiTotalLP, hecgohmReserves, BigDecimal.fromString('47.66')) // NOTE: There is no way to get OHM index on other chains :(
+        hecgohmRFV = getDiscountedPairUSD(hecgohmBalance, hecgohmTotalLP, hecgohmReserves, BigDecimal.fromString('48')) // NOTE: There is no way to get OHM index on other chains :(
     }
 
     let investments = BigDecimal.fromString('0')
