@@ -210,12 +210,14 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecgohmRFV = getDiscountedPairUSD(hecgohmBalance, hecgohmTotalLP, hecgohmReserves, BigDecimal.fromString('48')) // NOTE: There is no way to get OHM index on other chains :(
     }
 
+    let daiInvestments = BigDecimal.fromString('0')
+    let usdcInvestments = BigDecimal.fromString('0')
     let investments = BigDecimal.fromString('0')
     if (blockNumber.gt(BigInt.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT_BLOCK))) {
         let curveGauge = CurveGaugeAllocator.bind(Address.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT))
-        let daiInvestments = curveGauge.tokenInfo(Address.fromString(ERC20DAI_CONTRACT)).value3
-        let usdcInvestments = curveGauge.tokenInfo(Address.fromString(USDC_ERC20_CONTRACT)).value3
-        investments = toDecimal(daiInvestments, 18).plus(toDecimal(usdcInvestments, 6))
+        daiInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(ERC20DAI_CONTRACT)).value3, 18)
+        usdcInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(USDC_ERC20_CONTRACT)).value3, 6)
+        investments = daiInvestments.plus(usdcInvestments)
     }
 
     let stableValueDecimal = toDecimal(daiBalance, 18)
@@ -247,13 +249,13 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         mv,
         rfv,
         // treasuryDaiRiskFreeValue = DAI RFV + DAI
-        hecdaiRFV.plus(toDecimal(daiBalance, 18)),
+        hecdaiRFV.plus(toDecimal(daiBalance, 18)).plus(daiInvestments),
         // treasuryUsdcRiskFreeValue = USDC RFV + USDC
-        hecusdcRFV.plus(toDecimal(usdcBalance, 6)),
+        hecusdcRFV.plus(toDecimal(usdcBalance, 6)).plus(usdcInvestments),
         // treasuryDaiMarketValue = DAI LP + DAI
-        hecdaiValue.plus(toDecimal(daiBalance, 18)),
+        hecdaiValue.plus(toDecimal(daiBalance, 18)).plus(daiInvestments),
         // treasuryUsdcMarketValue = USDC LP + USDC
-        hecusdcValue.plus(toDecimal(usdcBalance, 6)),
+        hecusdcValue.plus(toDecimal(usdcBalance, 6)).plus(usdcInvestments),
         wftmValue,
         wftmValue,
         toDecimal(mimBalance, 18),
