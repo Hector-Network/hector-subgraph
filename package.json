@@ -1,13 +1,13 @@
 {
-  "name": "hector-subgraph",
+  "name": "initialhec",
   "license": "UNLICENSED",
   "scripts": {
     "codegen": "graph codegen",
     "build": "graph build",
-    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ wkich/hector-subgraph",
-    "create-local": "graph create --node http://localhost:8020/ wkich/hector-subgraph",
-    "remove-local": "graph remove --node http://localhost:8020/ wkich/hector-subgraph",
-    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 wkich/hector-subgraph"
+    "deploy": "graph deploy --node https://api.thegraph.com/deploy/ cwhittaker123/initialhec",
+    "create-local": "graph create --node http://localhost:8020/ cwhittaker123/initialhec",
+    "remove-local": "graph remove --node http://localhost:8020/ cwhittaker123/initialhec",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 cwhittaker123/initialhec"
   },
   "dependencies": {
     "@graphprotocol/graph-cli": "0.23.2",
