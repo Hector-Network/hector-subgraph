@@ -178,6 +178,11 @@ export class ProtocolMetric extends Entity {
     this.set("treasuryHecDaiPOL", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryHecUsdcPOL", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryHecFraxPOL", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set(
+      "treasuryBOORiskFreeValue",
+      Value.fromBigDecimal(BigDecimal.zero())
+    );
+    this.set("treasuryBOOMarketValue", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -473,6 +478,24 @@ export class ProtocolMetric extends Entity {
 
   set treasuryHecFraxPOL(value: BigDecimal) {
     this.set("treasuryHecFraxPOL", Value.fromBigDecimal(value));
+  }
+
+  get treasuryBOORiskFreeValue(): BigDecimal {
+    let value = this.get("treasuryBOORiskFreeValue");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryBOORiskFreeValue(value: BigDecimal) {
+    this.set("treasuryBOORiskFreeValue", Value.fromBigDecimal(value));
+  }
+
+  get treasuryBOOMarketValue(): BigDecimal {
+    let value = this.get("treasuryBOOMarketValue");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryBOOMarketValue(value: BigDecimal) {
+    this.set("treasuryBOOMarketValue", Value.fromBigDecimal(value));
   }
 }
 
