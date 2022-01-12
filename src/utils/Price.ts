@@ -20,12 +20,10 @@ export function getBOOUSDRate(): BigDecimal {
     let reserve1 = reserves.value1.toBigDecimal() // BOO
 
     // Calculate FTM/BOO rate
-    let ftmBooRate = reserve0.div(reserve1).times(BIG_DECIMAL_1E12)
-    log.debug("FTM/BOO rate {}", [ftmBooRate.toString()])
+    let ftmBooRate = reserve0.div(reserve1)
 
     // GET USDC/FTM rate
     let usdcFtmRate = getFTMUSDRate()
-    log.debug("USDC/FTM rate {}", [usdcFtmRate.toString()])
 
     // Calculate USDC/BOO rate
     let usdcBooRate = ftmBooRate.times(usdcFtmRate)
