@@ -145,6 +145,7 @@ function getHECGOHMReserves(pair: UniswapV2Pair): BigDecimal[] {
 }
 
 function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
+    const rfvRatio = BigDecimal.fromString('0.5')
     let daiERC20 = ERC20.bind(Address.fromString(ERC20DAI_CONTRACT))
     let usdcERC20 = ERC20.bind(Address.fromString(USDC_ERC20_CONTRACT))
     let wftmERC20 = ERC20.bind(Address.fromString(WFTM_ERC20_CONTRACT))
@@ -165,10 +166,12 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     // Calculate wftm value
     let wftmBalance = wftmERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
+    let wftmRFV = wftmValue.times(rfvRatio)
 
     // Calculate boo value
     let booBalance = booERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let booValue = toDecimal(booBalance, 18).times(getBOOUSDRate())
+    let booRFV = booValue.times(rfvRatio)
 
     let hecusdRate = getHECUSDRate()
 
@@ -240,7 +243,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue);
-    let rfv = stableValueDecimal.plus(rfvLpValue)
+    let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV)
 
     log.debug("Treasury Market Value {}", [mv.toString()])
     log.debug("Treasury RFV {}", [rfv.toString()])
@@ -250,7 +253,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     log.debug("Treasury MIM value {}", [toDecimal(mimBalance, 18).toString()])
     log.debug("Treasury FRAX value {}", [toDecimal(fraxBalance, 18).toString()])
     log.debug("Treasury WFTM value {}", [wftmValue.toString()])
+    log.debug("Treasury WFTM RFV {}", [wftmRFV.toString()])
     log.debug("Treasury BOO value {}", [booValue.toString()])
+    log.debug("Treasury BOO RFV {}", [booRFV.toString()])
     log.debug("Treasury HEC-DAI RFV {}", [hecdaiRFV.toString()])
     log.debug("Treasury HEC-USDC RFV {}", [hecusdcRFV.toString()])
     log.debug("Treasury HEC-FRAX RFV {}", [hecfraxRFV.toString()])
@@ -267,7 +272,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecdaiValue.plus(toDecimal(daiBalance, 18)).plus(daiInvestments),
         // treasuryUsdcMarketValue = USDC LP + USDC
         hecusdcValue.plus(toDecimal(usdcBalance, 6)).plus(usdcInvestments),
-        wftmValue,
+        wftmRFV,
         wftmValue,
         toDecimal(mimBalance, 18),
         toDecimal(mimBalance, 18),
@@ -283,7 +288,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecfraxPOL,
         // Investing
         investments,
-        booValue
+        // FIXME: Swap these two
+        booValue,
+        booRFV
     ]
 }
 
@@ -379,7 +386,7 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryHecFraxPOL = mv_rfv[16]
     pm.treasuryInvestments = mv_rfv[17]
     pm.treasuryBOORiskFreeValue = mv_rfv[18]
-    pm.treasuryBOOMarketValue = mv_rfv[18]
+    pm.treasuryBOOMarketValue = mv_rfv[19]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
