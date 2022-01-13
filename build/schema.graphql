@@ -42,6 +42,8 @@ type ProtocolMetric @entity {
   treasuryHecFraxPOL: BigDecimal!
   treasuryBOORiskFreeValue: BigDecimal!
   treasuryBOOMarketValue: BigDecimal!
+  treasuryCRVRiskFreeValue: BigDecimal!
+  treasuryCRVMarketValue: BigDecimal!
 }
 
 type LastBlock @entity {
