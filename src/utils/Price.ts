@@ -2,7 +2,8 @@ import {
     SPIRIT_HECGOHM_PAIR,
     SPOOKY_HECDAI_PAIR,
     SPOOKY_USDC_FTM_PAIR,
-    SPOOKY_FTM_BOO_PAIR
+    SPOOKY_FTM_BOO_PAIR,
+    SPOOKY_CRV_FTM_PAIR
 } from './Constants'
 import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
 import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
@@ -11,6 +12,23 @@ import { toDecimal } from './Decimals'
 
 let BIG_DECIMAL_1E9 = BigDecimal.fromString('1e9')
 let BIG_DECIMAL_1E12 = BigDecimal.fromString('1e12')
+
+export function getCRVUSDRate(): BigDecimal {
+    let pair = UniswapV2Pair.bind(Address.fromString(SPOOKY_CRV_FTM_PAIR))
+
+    let reserves = pair.getReserves()
+    let crvReserve = reserves.value0.toBigDecimal() // CRV
+    let ftmReserve = reserves.value1.toBigDecimal() // FTM
+
+    // GET USDC/FTM rate
+    let usdcFtmRate = getFTMUSDRate()
+
+    // (FTM/CRV)*(USDC/FTM) = USDC/CRV 
+    let crvRate = ftmReserve.div(crvReserve).times(usdcFtmRate)
+    log.debug("crv rate {}", [crvRate.toString()])
+
+    return crvRate
+}
 
 export function getBOOUSDRate(): BigDecimal {
     let pair = UniswapV2Pair.bind(Address.fromString(SPOOKY_FTM_BOO_PAIR))
