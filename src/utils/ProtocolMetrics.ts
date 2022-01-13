@@ -300,7 +300,6 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecfraxPOL,
         // Investing
         investments,
-        // FIXME: Swap these two
         booRFV,
         booValue,
         crvRFV,
