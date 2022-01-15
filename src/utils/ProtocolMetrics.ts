@@ -36,10 +36,12 @@ import {
     SPIRIT_HECGOHM_PAIR_BLOCK,
     SPIRIT_HECGOHM_PAIR,
     BOO_ERC20_CONTRACT,
-    CRV_ERC20_CONTRACT
+    CRV_ERC20_CONTRACT,
+    WETH_ERC20_CONTRACT
 } from './Constants';
 import {toDecimal} from './Decimals';
-import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate, getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate} from './Price';
+import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate, 
+    getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate} from './Price';
 
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -80,6 +82,8 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryBOOMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryCRVRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryCRVMarketValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryWETHRiskFreeValue = BigDecimal.fromString("0")
+        protocolMetric.treasuryWETHMarketValue = BigDecimal.fromString("0")
 
         protocolMetric.save()
     }
@@ -156,6 +160,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let fraxERC20 = ERC20.bind(Address.fromString(FRAX_ERC20_CONTRACT))
     let booERC20 = ERC20.bind(Address.fromString(BOO_ERC20_CONTRACT))
     let crvERC20 = ERC20.bind(Address.fromString(CRV_ERC20_CONTRACT))
+    let wethERC20 = ERC20.bind(Address.fromString(WETH_ERC20_CONTRACT))
 
     let hecdaiPair = UniswapV2Pair.bind(Address.fromString(SPOOKY_HECDAI_PAIR))
     let hecfraxPair = UniswapV2Pair.bind(Address.fromString(SPOOKY_HECFRAX_PAIR))
@@ -179,9 +184,13 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
 
     // Calculate crv value
     let crvBalance = crvERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
-    log.debug("crvBalance {}", [crvBalance.toString()])
     let crvValue = toDecimal(crvBalance, 18).times(getCRVUSDRate())
     let crvRFV = crvValue.times(rfvRatio)
+
+    // Calculate weth value
+    let wethBalance = wethERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let wethValue = toDecimal(wethBalance, 18).times(getWETHUSDRate())
+    let wethRFV = wethValue.times(rfvRatio)
 
     let hecusdRate = getHECUSDRate()
 
@@ -252,8 +261,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue).plus(hecgohmValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
-    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue)
-    let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV)
+    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue)
+    let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
     log.debug("Treasury Market Value {}", [mv.toString()])
     log.debug("Treasury RFV {}", [rfv.toString()])
@@ -268,6 +277,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     log.debug("Treasury BOO RFV {}", [booRFV.toString()])
     log.debug("Treasury CRV value {}", [crvValue.toString()])
     log.debug("Treasury CRV RFV {}", [crvRFV.toString()])
+    log.debug("Treasury WETH value {}", [wethValue.toString()])
+    log.debug("Treasury WETH RFV {}", [wethRFV.toString()])
     log.debug("Treasury HEC-DAI RFV {}", [hecdaiRFV.toString()])
     log.debug("Treasury HEC-USDC RFV {}", [hecusdcRFV.toString()])
     log.debug("Treasury HEC-FRAX RFV {}", [hecfraxRFV.toString()])
@@ -303,7 +314,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         booRFV,
         booValue,
         crvRFV,
-        crvValue
+        crvValue,
+        wethRFV,
+        wethValue
     ]
 }
 
@@ -402,6 +415,8 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryBOOMarketValue = mv_rfv[19]
     pm.treasuryCRVRiskFreeValue = mv_rfv[20]
     pm.treasuryCRVMarketValue = mv_rfv[21]
+    pm.treasuryWETHRiskFreeValue = mv_rfv[22]
+    pm.treasuryWETHMarketValue = mv_rfv[23]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
