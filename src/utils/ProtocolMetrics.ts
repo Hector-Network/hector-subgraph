@@ -415,8 +415,8 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryBOOMarketValue = mv_rfv[19]
     pm.treasuryCRVRiskFreeValue = mv_rfv[20]
     pm.treasuryCRVMarketValue = mv_rfv[21]
-    pm.treasuryWETHRiskFreeValue = mv_rfv[20]
-    pm.treasuryWETHMarketValue = mv_rfv[21]
+    pm.treasuryWETHRiskFreeValue = mv_rfv[22]
+    pm.treasuryWETHMarketValue = mv_rfv[23]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
