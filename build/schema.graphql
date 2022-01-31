@@ -1,3 +1,9 @@
+type Tor @entity {
+  id: ID!
+  timestamp: BigInt!
+  supply: BigDecimal!
+}
+
 type Rebase @entity {
   id: ID!
   transaction: String!

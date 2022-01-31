@@ -11,6 +11,60 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class Tor extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("supply", Value.fromBigDecimal(BigDecimal.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save Tor entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save Tor entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("Tor", id.toString(), this);
+    }
+  }
+
+  static load(id: string): Tor | null {
+    return changetype<Tor | null>(store.get("Tor", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get supply(): BigDecimal {
+    let value = this.get("supply");
+    return value!.toBigDecimal();
+  }
+
+  set supply(value: BigDecimal) {
+    this.set("supply", Value.fromBigDecimal(value));
+  }
+}
+
 export class Rebase extends Entity {
   constructor(id: string) {
     super();
