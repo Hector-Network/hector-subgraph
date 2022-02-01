@@ -1,14 +1,14 @@
-import {Address, BigDecimal, BigInt, log} from '@graphprotocol/graph-ts'
+import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
 import { CurveGaugeAllocator } from '../../generated/HectorStakingV1/CurveGaugeAllocator'
-import {HectorERC20} from '../../generated/HectorStakingV1/HectorERC20';
-import {sHectorERC20} from '../../generated/HectorStakingV1/sHectorERC20';
-import {CirculatingSupply} from '../../generated/HectorStakingV1/CirculatingSupply';
-import {ERC20} from '../../generated/HectorStakingV1/ERC20';
-import {UniswapV2Pair} from '../../generated/HectorStakingV1/UniswapV2Pair';
-import {HectorStaking} from '../../generated/HectorStakingV1/HectorStaking';
-import {ethereum} from '@graphprotocol/graph-ts'
+import { HectorERC20 } from '../../generated/HectorStakingV1/HectorERC20';
+import { sHectorERC20 } from '../../generated/HectorStakingV1/sHectorERC20';
+import { CirculatingSupply } from '../../generated/HectorStakingV1/CirculatingSupply';
+import { ERC20 } from '../../generated/HectorStakingV1/ERC20';
+import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
+import { HectorStaking } from '../../generated/HectorStakingV1/HectorStaking';
+import { ethereum } from '@graphprotocol/graph-ts'
 
-import {ProtocolMetric, LastBlock} from '../../generated/schema'
+import { ProtocolMetric, LastBlock } from '../../generated/schema'
 import {
     CIRCULATING_SUPPLY_CONTRACT,
     CIRCULATING_SUPPLY_CONTRACT_BLOCK,
@@ -39,9 +39,11 @@ import {
     CRV_ERC20_CONTRACT,
     WETH_ERC20_CONTRACT
 } from './Constants';
-import {toDecimal} from './Decimals';
-import {getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate, 
-    getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate} from './Price';
+import { toDecimal } from './Decimals';
+import {
+    getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate,
+    getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate
+} from './Price';
 
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -247,8 +249,10 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let investments = BigDecimal.fromString('0')
     if (blockNumber.gt(BigInt.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT_BLOCK))) {
         let curveGauge = CurveGaugeAllocator.bind(Address.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT))
-        daiInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(ERC20DAI_CONTRACT)).value3, 18)
+        daiInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(ERC20DAI_CONTRACT)).value3, 18);
+        log.debug('daiInvestments: ', [daiInvestments.toString()]);
         usdcInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(USDC_ERC20_CONTRACT)).value3, 6)
+        log.debug('usdcInvestments: ', [usdcInvestments.toString()]);
         investments = daiInvestments.plus(usdcInvestments)
     }
 
