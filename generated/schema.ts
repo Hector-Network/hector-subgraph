@@ -17,9 +17,7 @@ export class Tor extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
-    this.set("bankBorrowed", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("bankSupplied", Value.fromBigDecimal(BigDecimal.zero()));
-    this.set("tORTVL", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("torTVL", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("supply", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
@@ -58,31 +56,13 @@ export class Tor extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get bankBorrowed(): BigDecimal {
-    let value = this.get("bankBorrowed");
+  get torTVL(): BigDecimal {
+    let value = this.get("torTVL");
     return value!.toBigDecimal();
   }
 
-  set bankBorrowed(value: BigDecimal) {
-    this.set("bankBorrowed", Value.fromBigDecimal(value));
-  }
-
-  get bankSupplied(): BigDecimal {
-    let value = this.get("bankSupplied");
-    return value!.toBigDecimal();
-  }
-
-  set bankSupplied(value: BigDecimal) {
-    this.set("bankSupplied", Value.fromBigDecimal(value));
-  }
-
-  get tORTVL(): BigDecimal {
-    let value = this.get("tORTVL");
-    return value!.toBigDecimal();
-  }
-
-  set tORTVL(value: BigDecimal) {
-    this.set("tORTVL", Value.fromBigDecimal(value));
+  set torTVL(value: BigDecimal) {
+    this.set("torTVL", Value.fromBigDecimal(value));
   }
 
   get supply(): BigDecimal {
@@ -280,6 +260,8 @@ export class ProtocolMetric extends Entity {
       "treasuryWETHMarketValue",
       Value.fromBigDecimal(BigDecimal.zero())
     );
+    this.set("bankBorrowed", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("bankSupplied", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -629,6 +611,24 @@ export class ProtocolMetric extends Entity {
 
   set treasuryWETHMarketValue(value: BigDecimal) {
     this.set("treasuryWETHMarketValue", Value.fromBigDecimal(value));
+  }
+
+  get bankBorrowed(): BigDecimal {
+    let value = this.get("bankBorrowed");
+    return value!.toBigDecimal();
+  }
+
+  set bankBorrowed(value: BigDecimal) {
+    this.set("bankBorrowed", Value.fromBigDecimal(value));
+  }
+
+  get bankSupplied(): BigDecimal {
+    let value = this.get("bankSupplied");
+    return value!.toBigDecimal();
+  }
+
+  set bankSupplied(value: BigDecimal) {
+    this.set("bankSupplied", Value.fromBigDecimal(value));
   }
 }
 

@@ -1,4 +1,4 @@
-import { Address, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
+import { Address, bigDecimal, BigDecimal, BigInt, log } from '@graphprotocol/graph-ts'
 import { CurveGaugeAllocator } from '../../generated/HectorStakingV1/CurveGaugeAllocator'
 import { HectorERC20 } from '../../generated/HectorStakingV1/HectorERC20';
 import { sHectorERC20 } from '../../generated/HectorStakingV1/sHectorERC20';
@@ -6,6 +6,7 @@ import { CirculatingSupply } from '../../generated/HectorStakingV1/CirculatingSu
 import { ERC20 } from '../../generated/HectorStakingV1/ERC20';
 import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
 import { HectorStaking } from '../../generated/HectorStakingV1/HectorStaking';
+import { bank } from '../../generated/HectorStakingV2/bank';
 
 import { ethereum } from '@graphprotocol/graph-ts'
 
@@ -40,17 +41,17 @@ import {
     CRV_ERC20_CONTRACT,
     WETH_ERC20_CONTRACT,
     BANK_UNITROLLER,
-    BANK_CONTRACT,
-    TOR_LP_POOL_ADDRESS,
-    FARMINNG_STAKING_REWARDS_ADDRESS
+    BANK_CONTRACT
 } from './Constants';
 import { toDecimal } from './Decimals';
 import {
     getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate,
     getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate
 } from './Price';
-import { getBankLendingValues, getTORTvl } from '../Tor';
+import { getTORTvl } from '../Tor';
 
+const TOR_LP_POOL_BLOCK = '28725787';
+const BANK_BLOCK = '29042732';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
     let id = blockNumber.minus(blockNumber.mod(BigInt.fromString("16000")));
@@ -92,6 +93,8 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryCRVMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryWETHRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryWETHMarketValue = BigDecimal.fromString("0")
+        protocolMetric.bankBorrowed = bigDecimal.fromString('0');
+        protocolMetric.bankSupplied = bigDecimal.fromString('0');
 
         protocolMetric.save()
     }
@@ -105,6 +108,12 @@ function getTotalSupply(): BigDecimal {
     let total_supply = toDecimal(hec_contract.totalSupply(), 9)
     log.debug("Total Supply {}", [total_supply.toString()])
     return total_supply
+}
+
+function getBankLendingValues(): BigDecimal[] {
+    const bankContract = bank.bind(Address.fromString(BANK_CONTRACT));
+    const bankValues = bankContract.viewLendingNetwork(Address.fromString(BANK_UNITROLLER));
+    return [toDecimal(bankValues.value0), toDecimal(bankValues.value1)];
 }
 
 function getCriculatingSupply(blockNumber: BigInt, total_supply: BigDecimal): BigDecimal {
@@ -271,13 +280,11 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue).plus(hecgohmValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
-    let mv = BigDecimal.fromString("0");
-    if (blockNumber.gt(BigInt.fromString('28725787'))) {
-
-        mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue)
-            .plus(getBankLendingValues()[0]).plus(getBankLendingValues()[1]).plus(getTORTvl())
-    } else {
-        mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
+    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
+    if (blockNumber.gt(BigInt.fromString(TOR_LP_POOL_BLOCK))) {
+        mv = mv.plus(getTORTvl())
+    } else if (blockNumber.gt(BigInt.fromString(BANK_BLOCK))) {
+        mv = mv.plus(getBankLendingValues()[0]).plus(getBankLendingValues()[1]);
     }
     let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
@@ -407,6 +414,11 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
 
     //Total Value Locked
     pm.totalValueLocked = pm.sHecCirculatingSupply.times(pm.hecPrice)
+
+    if (blockNumber.gt(BigInt.fromString(BANK_BLOCK))) {
+        pm.bankSupplied = getBankLendingValues()[0];
+        pm.bankBorrowed = getBankLendingValues()[1]
+    }
 
     //Treasury RFV and MV
     let mv_rfv = getMV_RFV(blockNumber)

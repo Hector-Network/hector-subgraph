@@ -1,9 +1,7 @@
 type Tor @entity {
   id: ID!
   timestamp: BigInt!
-  bankBorrowed: BigDecimal!
-  bankSupplied: BigDecimal!
-  tORTVL: BigDecimal!
+  torTVL: BigDecimal!
   supply: BigDecimal!
 }
 
@@ -55,6 +53,8 @@ type ProtocolMetric @entity {
   treasuryCRVMarketValue: BigDecimal!
   treasuryWETHRiskFreeValue: BigDecimal!
   treasuryWETHMarketValue: BigDecimal!
+  bankBorrowed: BigDecimal!
+  bankSupplied: BigDecimal!
 }
 
 type LastBlock @entity {
