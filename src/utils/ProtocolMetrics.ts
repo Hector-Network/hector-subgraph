@@ -6,8 +6,7 @@ import { CirculatingSupply } from '../../generated/HectorStakingV1/CirculatingSu
 import { ERC20 } from '../../generated/HectorStakingV1/ERC20';
 import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
 import { HectorStaking } from '../../generated/HectorStakingV1/HectorStaking';
-import { TorLPPool } from '../../generated/HectorStakingV2/TorLPPool';
-import { bank } from '../../generated/HectorStakingV2/bank';
+
 import { ethereum } from '@graphprotocol/graph-ts'
 
 import { ProtocolMetric, LastBlock } from '../../generated/schema'
@@ -50,6 +49,7 @@ import {
     getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate,
     getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate
 } from './Price';
+import { getBankLendingValues, getTORTvl } from '../Tor';
 
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -92,26 +92,13 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryCRVMarketValue = BigDecimal.fromString("0")
         protocolMetric.treasuryWETHRiskFreeValue = BigDecimal.fromString("0")
         protocolMetric.treasuryWETHMarketValue = BigDecimal.fromString("0")
-        protocolMetric.treasuryBankBorrowed = BigDecimal.fromString("0")
-        protocolMetric.treasuryBankSupplied = BigDecimal.fromString("0")
-        protocolMetric.treasuryTORTVL = BigDecimal.fromString("0")
 
         protocolMetric.save()
     }
     return protocolMetric as ProtocolMetric
 }
 
-function getBankLendingValues(): BigDecimal[] {
-    const bankContract = bank.bind(Address.fromString(BANK_CONTRACT));
-    const bankValues = bankContract.viewLendingNetwork(Address.fromString(BANK_UNITROLLER));
-    return [toDecimal(bankValues.value0), toDecimal(bankValues.value1)];
-}
 
-function getTORTvl(): BigDecimal {
-    const torLPContract = TorLPPool.bind(Address.fromString(TOR_LP_POOL_ADDRESS));
-    const torTVL = torLPContract.balanceOf(Address.fromString(FARMINNG_STAKING_REWARDS_ADDRESS));
-    return toDecimal(torTVL);
-}
 
 function getTotalSupply(): BigDecimal {
     let hec_contract = HectorERC20.bind(Address.fromString(HEC_ERC20_CONTRACT))
@@ -275,7 +262,6 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         log.debug('usdcInvestments: ', [usdcInvestments.toString()]);
         investments = daiInvestments.plus(usdcInvestments)
     }
-
     let stableValueDecimal = toDecimal(daiBalance, 18)
         .plus(toDecimal(usdcBalance, 6))
         .plus(toDecimal(mimBalance, 18))
@@ -285,8 +271,14 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue).plus(hecgohmValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
-    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue)
-        .plus(getBankLendingValues()[0]).plus(getBankLendingValues()[1]).plus(getTORTvl())
+    let mv = BigDecimal.fromString("0");
+    if (blockNumber.gt(BigInt.fromString('28725787'))) {
+
+        mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue)
+            .plus(getBankLendingValues()[0]).plus(getBankLendingValues()[1]).plus(getTORTvl())
+    } else {
+        mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
+    }
     let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
     log.debug("Treasury Market Value {}", [mv.toString()])
@@ -415,10 +407,6 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
 
     //Total Value Locked
     pm.totalValueLocked = pm.sHecCirculatingSupply.times(pm.hecPrice)
-
-    pm.treasuryBankSupplied = getBankLendingValues()[0];
-    pm.treasuryBankBorrowed = getBankLendingValues()[1];
-    pm.treasuryTORTVL = getTORTvl();
 
     //Treasury RFV and MV
     let mv_rfv = getMV_RFV(blockNumber)
