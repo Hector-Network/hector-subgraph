@@ -250,6 +250,9 @@ export class ProtocolMetric extends Entity {
       "treasuryWETHMarketValue",
       Value.fromBigDecimal(BigDecimal.zero())
     );
+    this.set("treasuryBankBorrowed", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("treasuryBankSupplied", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("treasuryTORTVL", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -599,6 +602,33 @@ export class ProtocolMetric extends Entity {
 
   set treasuryWETHMarketValue(value: BigDecimal) {
     this.set("treasuryWETHMarketValue", Value.fromBigDecimal(value));
+  }
+
+  get treasuryBankBorrowed(): BigDecimal {
+    let value = this.get("treasuryBankBorrowed");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryBankBorrowed(value: BigDecimal) {
+    this.set("treasuryBankBorrowed", Value.fromBigDecimal(value));
+  }
+
+  get treasuryBankSupplied(): BigDecimal {
+    let value = this.get("treasuryBankSupplied");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryBankSupplied(value: BigDecimal) {
+    this.set("treasuryBankSupplied", Value.fromBigDecimal(value));
+  }
+
+  get treasuryTORTVL(): BigDecimal {
+    let value = this.get("treasuryTORTVL");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryTORTVL(value: BigDecimal) {
+    this.set("treasuryTORTVL", Value.fromBigDecimal(value));
   }
 }
 

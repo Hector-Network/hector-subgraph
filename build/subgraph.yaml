@@ -68,6 +68,10 @@ dataSources:
           file: HectorStakingV2\abis\CirculatingSupply.json
         - name: CurveGaugeAllocator
           file: HectorStakingV2\abis\CurveGaugeAllocator.json
+        - name: bank
+          file: HectorStakingV2\abis\BankAbi.json
+        - name: TorLPPool
+          file: HectorStakingV2\abis\TorLPPool.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake

@@ -1,0 +1,21 @@
+ [{
+     "inputs": [{
+         "internalType": "address",
+         "name": "unitroller",
+         "type": "address"
+     }],
+     "name": "viewLendingNetwork",
+     "outputs": [{
+             "internalType": "uint256",
+             "name": "totalSupply",
+             "type": "uint256"
+         },
+         {
+             "internalType": "uint256",
+             "name": "totalBorrows",
+             "type": "uint256"
+         }
+     ],
+     "stateMutability": "view",
+     "type": "function"
+ }]
