@@ -280,13 +280,18 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
+
     if (blockNumber.gt(BigInt.fromString(TOR_LP_POOL_BLOCK))) {
+        log.debug("TOR TVL VALUE {}", [getTORTvl().toString()])
         mv = mv.plus(getTORTvl())
-    } else if (blockNumber.ge(BigInt.fromString(BANK_BLOCK))) {
+    }
+    if (blockNumber.ge(BigInt.fromString(BANK_BLOCK))) {
+        log.debug("BANK VALUE {}", [getBankLendingValues()[0].plus(getBankLendingValues()[1]).toString()])
         mv = mv.plus(getBankLendingValues()[0]).plus(getBankLendingValues()[1]);
     }
     let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
+    log.debug("ORIGINAL VAL {}", [stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).toString()])
     log.debug("Treasury Market Value {}", [mv.toString()])
     log.debug("Treasury RFV {}", [rfv.toString()])
     log.debug("Treasury Investments {}", [investments.toString()])
