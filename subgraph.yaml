@@ -32,6 +32,10 @@ dataSources:
           file: ./abis/CirculatingSupply.json
         - name: CurveGaugeAllocator
           file: ./abis/CurveGaugeAllocator.json
+        - name: bank
+          file: ./abis/BankAbi.json
+        - name: TorLPPool
+          file: ./abis/TorLPPool.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake
@@ -70,6 +74,8 @@ dataSources:
           file: ./abis/CurveGaugeAllocator.json
         - name: bank
           file: ./abis/BankAbi.json
+        - name: TorLPPool
+          file: ./abis/TorLPPool.json
       callHandlers:
         - function: stake(uint256,address)
           handler: handleStake
