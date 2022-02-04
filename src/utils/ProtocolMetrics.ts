@@ -49,8 +49,7 @@ import {
     getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate
 } from './Price';
 import { getTORTvl } from '../Tor';
-
-const TOR_LP_POOL_BLOCK = '28725787';
+const TOR_LP_POOL_BLOCK = '28731023';
 const BANK_BLOCK = '29042732';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -283,7 +282,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
     if (blockNumber.gt(BigInt.fromString(TOR_LP_POOL_BLOCK))) {
         mv = mv.plus(getTORTvl())
-    } else if (blockNumber.gt(BigInt.fromString(BANK_BLOCK))) {
+    } else if (blockNumber.ge(BigInt.fromString(BANK_BLOCK))) {
         mv = mv.plus(getBankLendingValues()[0]).plus(getBankLendingValues()[1]);
     }
     let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
@@ -415,7 +414,7 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     //Total Value Locked
     pm.totalValueLocked = pm.sHecCirculatingSupply.times(pm.hecPrice)
 
-    if (blockNumber.gt(BigInt.fromString(BANK_BLOCK))) {
+    if (blockNumber.ge(BigInt.fromString(BANK_BLOCK))) {
         pm.bankSupplied = getBankLendingValues()[0];
         pm.bankBorrowed = getBankLendingValues()[1]
     }
