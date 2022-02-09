@@ -2,6 +2,7 @@ type Tor @entity {
   id: ID!
   timestamp: BigInt!
   torTVL: BigDecimal!
+  apy: BigDecimal!
   supply: BigDecimal!
 }
 

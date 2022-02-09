@@ -1,0 +1,191 @@
+ [{
+     "inputs": [],
+     "name": "assetPrice",
+     "outputs": [{
+         "internalType": "uint256",
+         "name": "",
+         "type": "uint256"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [],
+     "name": "c2pool",
+     "outputs": [{
+         "internalType": "contract ICurvePool",
+         "name": "",
+         "type": "address"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [{
+         "internalType": "uint256",
+         "name": "hugsAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "daiAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "usdcAmount",
+         "type": "uint256"
+     }],
+     "name": "calBonusOrSlipage",
+     "outputs": [{
+         "internalType": "uint256",
+         "name": "percentage",
+         "type": "uint256"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [{
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+     }],
+     "name": "calOptimal",
+     "outputs": [{
+         "internalType": "uint256",
+         "name": "_optimalHugs",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_optimalDai",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_optimalUsdc",
+         "type": "uint256"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [{
+         "internalType": "uint256",
+         "name": "hugsAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "daiAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "usdcAmount",
+         "type": "uint256"
+     }],
+     "name": "calPoolToken",
+     "outputs": [{
+         "internalType": "uint256",
+         "name": "poolTokenAmount",
+         "type": "uint256"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [{
+         "internalType": "address",
+         "name": "wallet",
+         "type": "address"
+     }],
+     "name": "calWithdrawAndEarned",
+     "outputs": [{
+         "internalType": "uint256",
+         "name": "_hugsWithdrawAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_daiWithdrawAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_usdcWithdrawAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_earnedRewardAmount",
+         "type": "uint256"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [{
+         "internalType": "address",
+         "name": "wallet",
+         "type": "address"
+     }, {
+         "internalType": "uint256",
+         "name": "amount",
+         "type": "uint256"
+     }],
+     "name": "getStakingInfo",
+     "outputs": [{
+         "internalType": "uint256",
+         "name": "_tvl",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_apr",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_begin",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_finish",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_optimalHugsAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_optimalDaiAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_optimalUsdcAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_hugsWithdrawAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_daiWithdrawAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_usdcWithdrawAmount",
+         "type": "uint256"
+     }, {
+         "internalType": "uint256",
+         "name": "_earnedRewardAmount",
+         "type": "uint256"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [],
+     "name": "hugsPool",
+     "outputs": [{
+         "internalType": "contract ICurvePool",
+         "name": "",
+         "type": "address"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }, {
+     "inputs": [],
+     "name": "stakingRewards",
+     "outputs": [{
+         "internalType": "contract IStakingRewards",
+         "name": "",
+         "type": "address"
+     }],
+     "stateMutability": "view",
+     "type": "function"
+ }]

@@ -18,6 +18,7 @@ export class Tor extends Entity {
 
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("torTVL", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("apy", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("supply", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
@@ -63,6 +64,15 @@ export class Tor extends Entity {
 
   set torTVL(value: BigDecimal) {
     this.set("torTVL", Value.fromBigDecimal(value));
+  }
+
+  get apy(): BigDecimal {
+    let value = this.get("apy");
+    return value!.toBigDecimal();
+  }
+
+  set apy(value: BigDecimal) {
+    this.set("apy", Value.fromBigDecimal(value));
   }
 
   get supply(): BigDecimal {

@@ -148,6 +148,8 @@ dataSources:
           file: Tor\abis\Tor.json
         - name: TorLPPool
           file: Tor\abis\TorLPPool.json
+        - name: FarmingAggregator
+          file: Tor\abis\FarmingAggregator.json
       eventHandlers:
         - event: Transfer(indexed address,indexed address,uint256)
           handler: handleTransfer
