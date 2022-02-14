@@ -1,3 +1,10 @@
+type BaseRewardPool @entity {
+  id: ID!
+  timestamp: BigInt!
+  Lp: BigInt!
+  virtualPrice: BigInt!
+}
+
 type Tor @entity {
   id: ID!
   timestamp: BigInt!

@@ -11,6 +11,70 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
+export class BaseRewardPool extends Entity {
+  constructor(id: string) {
+    super();
+    this.set("id", Value.fromString(id));
+
+    this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("Lp", Value.fromBigInt(BigInt.zero()));
+    this.set("virtualPrice", Value.fromBigInt(BigInt.zero()));
+  }
+
+  save(): void {
+    let id = this.get("id");
+    assert(id != null, "Cannot save BaseRewardPool entity without an ID");
+    if (id) {
+      assert(
+        id.kind == ValueKind.STRING,
+        "Cannot save BaseRewardPool entity with non-string ID. " +
+          'Considering using .toHex() to convert the "id" to a string.'
+      );
+      store.set("BaseRewardPool", id.toString(), this);
+    }
+  }
+
+  static load(id: string): BaseRewardPool | null {
+    return changetype<BaseRewardPool | null>(store.get("BaseRewardPool", id));
+  }
+
+  get id(): string {
+    let value = this.get("id");
+    return value!.toString();
+  }
+
+  set id(value: string) {
+    this.set("id", Value.fromString(value));
+  }
+
+  get timestamp(): BigInt {
+    let value = this.get("timestamp");
+    return value!.toBigInt();
+  }
+
+  set timestamp(value: BigInt) {
+    this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get Lp(): BigInt {
+    let value = this.get("Lp");
+    return value!.toBigInt();
+  }
+
+  set Lp(value: BigInt) {
+    this.set("Lp", Value.fromBigInt(value));
+  }
+
+  get virtualPrice(): BigInt {
+    let value = this.get("virtualPrice");
+    return value!.toBigInt();
+  }
+
+  set virtualPrice(value: BigInt) {
+    this.set("virtualPrice", Value.fromBigInt(value));
+  }
+}
+
 export class Tor extends Entity {
   constructor(id: string) {
     super();
