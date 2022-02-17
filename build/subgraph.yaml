@@ -3,154 +3,30 @@ schema:
   file: schema.graphql
 dataSources:
   - kind: ethereum/contract
-    name: HectorStakingV1
-    network: fantom
+    name: EthMetrics
+    network: mainnet
     source:
-      address: "0x9ae7972BA46933B3B20aaE7Acbf6C311847aCA40"
-      abi: HectorStaking
-      startBlock: 20816532
+      address: "0x7e2b9B5244bcFa5108A76D5E7b507CFD5581AD4A"
+      abi: BaseRewardPool
+      startBlock: 14119959
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
       language: wasm/assemblyscript
       entities:
-        - HectorStaking
+        - EthMetrics
       abis:
-        - name: HectorStaking
-          file: HectorStakingV1\abis\HectorStaking.json
-        - name: StakingHelper
-          file: HectorStakingV1\abis\StakingHelper.json
-        - name: sHectorERC20
-          file: HectorStakingV1\abis\sHectorERC20.json
-        - name: HectorERC20
-          file: HectorStakingV1\abis\HectorERC20.json
-        - name: UniswapV2Pair
-          file: HectorStakingV1\abis\UniswapV2Pair.json
-        - name: ERC20
-          file: HectorStakingV1\abis\ERC20.json
-        - name: CirculatingSupply
-          file: HectorStakingV1\abis\CirculatingSupply.json
-        - name: CurveGaugeAllocator
-          file: HectorStakingV1\abis\CurveGaugeAllocator.json
-        - name: bank
-          file: HectorStakingV1\abis\BankAbi.json
-        - name: TorLPPool
-          file: HectorStakingV1\abis\TorLPPool.json
+        - name: BaseRewardPool
+          file: EthMetrics\abis\BaseRewardPool.json
+        - name: WormHole
+          file: EthMetrics\abis\WormHole.json
+        - name: Illuvium
+          file: EthMetrics\abis\Illuvium.json
+        - name: Matic
+          file: EthMetrics\abis\Matic.json
+        - name: UniswapV3Factory
+          file: EthMetrics\abis\UniswapV3Factory.json
       callHandlers:
-        - function: stake(uint256,address)
-          handler: handleStake
-        - function: unstake(uint256,bool)
-          handler: handleUnstake
-      file: HectorStakingV1\HectorStakingV1.wasm
-  - kind: ethereum/contract
-    name: HectorStakingV2
-    network: fantom
-    source:
-      address: "0xD12930C8deeDafD788F437879cbA1Ad1E3908Cc5"
-      abi: HectorStaking
-      startBlock: 22030704
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - HectorStaking
-      abis:
-        - name: HectorStaking
-          file: HectorStakingV2\abis\HectorStaking.json
-        - name: StakingHelper
-          file: HectorStakingV2\abis\StakingHelper.json
-        - name: sHectorERC20
-          file: HectorStakingV2\abis\sHectorERC20.json
-        - name: HectorERC20
-          file: HectorStakingV2\abis\HectorERC20.json
-        - name: UniswapV2Pair
-          file: HectorStakingV2\abis\UniswapV2Pair.json
-        - name: ERC20
-          file: HectorStakingV2\abis\ERC20.json
-        - name: CirculatingSupply
-          file: HectorStakingV2\abis\CirculatingSupply.json
-        - name: CurveGaugeAllocator
-          file: HectorStakingV2\abis\CurveGaugeAllocator.json
-        - name: bank
-          file: HectorStakingV2\abis\BankAbi.json
-        - name: TorLPPool
-          file: HectorStakingV2\abis\TorLPPool.json
-      callHandlers:
-        - function: stake(uint256,address)
-          handler: handleStake
-        - function: unstake(uint256,bool)
-          handler: handleUnstake
-      file: HectorStakingV1\HectorStakingV1.wasm
-  - kind: ethereum/contract
-    name: sHectorERC20V1
-    network: fantom
-    source:
-      address: "0x36f26880c6406b967bdb9901cde43abc9d53f106"
-      abi: sHectorERC20
-      startBlock: 20816532
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - sHectorERC20
-      abis:
-        - name: sHectorERC20
-          file: sHectorERC20V1\abis\sHectorERC20.json
-        - name: HectorERC20
-          file: sHectorERC20V1\abis\HectorERC20.json
-        - name: UniswapV2Pair
-          file: sHectorERC20V1\abis\UniswapV2Pair.json
-      callHandlers:
-        - function: rebase(uint256,uint256)
-          handler: rebaseFunction
-      file: sHectorERC20V1\sHectorERC20V1.wasm
-  - kind: ethereum/contract
-    name: sHectorERC20V2
-    network: fantom
-    source:
-      address: "0x75bdeF24285013387A47775828bEC90b91Ca9a5F"
-      abi: sHectorERC20
-      startBlock: 22030704
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - sHectorERC20
-      abis:
-        - name: sHectorERC20
-          file: sHectorERC20V2\abis\sHectorERC20.json
-        - name: HectorERC20
-          file: sHectorERC20V2\abis\HectorERC20.json
-        - name: UniswapV2Pair
-          file: sHectorERC20V2\abis\UniswapV2Pair.json
-      callHandlers:
-        - function: rebase(uint256,uint256)
-          handler: rebaseFunction
-      file: sHectorERC20V2\sHectorERC20V2.wasm
-  - kind: ethereum/contract
-    name: Tor
-    network: fantom
-    source:
-      address: "0x74E23dF9110Aa9eA0b6ff2fAEE01e740CA1c642e"
-      abi: Tor
-      startBlock: 28730052
-    mapping:
-      kind: ethereum/events
-      apiVersion: 0.0.5
-      language: wasm/assemblyscript
-      entities:
-        - Tor
-      abis:
-        - name: Tor
-          file: Tor\abis\Tor.json
-        - name: TorLPPool
-          file: Tor\abis\TorLPPool.json
-        - name: FarmingAggregator
-          file: Tor\abis\FarmingAggregator.json
-      eventHandlers:
-        - event: Transfer(indexed address,indexed address,uint256)
-          handler: handleTransfer
-      file: Tor\Tor.wasm
+        - function: withdrawAndUnwrap(uint256,bool)
+          handler: handleWithdrawAndUnwrap
+      file: EthMetrics\EthMetrics.wasm

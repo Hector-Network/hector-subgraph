@@ -11,31 +11,32 @@ import {
   BigDecimal
 } from "@graphprotocol/graph-ts";
 
-export class BaseRewardPool extends Entity {
+export class EthMetrics extends Entity {
   constructor(id: string) {
     super();
     this.set("id", Value.fromString(id));
 
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
-    this.set("Lp", Value.fromBigInt(BigInt.zero()));
-    this.set("virtualPrice", Value.fromBigInt(BigInt.zero()));
+    this.set("treasuryMatic", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("treasuryBaseRewardPool", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("treasuryIlluvium", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
     let id = this.get("id");
-    assert(id != null, "Cannot save BaseRewardPool entity without an ID");
+    assert(id != null, "Cannot save EthMetrics entity without an ID");
     if (id) {
       assert(
         id.kind == ValueKind.STRING,
-        "Cannot save BaseRewardPool entity with non-string ID. " +
+        "Cannot save EthMetrics entity with non-string ID. " +
           'Considering using .toHex() to convert the "id" to a string.'
       );
-      store.set("BaseRewardPool", id.toString(), this);
+      store.set("EthMetrics", id.toString(), this);
     }
   }
 
-  static load(id: string): BaseRewardPool | null {
-    return changetype<BaseRewardPool | null>(store.get("BaseRewardPool", id));
+  static load(id: string): EthMetrics | null {
+    return changetype<EthMetrics | null>(store.get("EthMetrics", id));
   }
 
   get id(): string {
@@ -56,22 +57,31 @@ export class BaseRewardPool extends Entity {
     this.set("timestamp", Value.fromBigInt(value));
   }
 
-  get Lp(): BigInt {
-    let value = this.get("Lp");
-    return value!.toBigInt();
+  get treasuryMatic(): BigDecimal {
+    let value = this.get("treasuryMatic");
+    return value!.toBigDecimal();
   }
 
-  set Lp(value: BigInt) {
-    this.set("Lp", Value.fromBigInt(value));
+  set treasuryMatic(value: BigDecimal) {
+    this.set("treasuryMatic", Value.fromBigDecimal(value));
   }
 
-  get virtualPrice(): BigInt {
-    let value = this.get("virtualPrice");
-    return value!.toBigInt();
+  get treasuryBaseRewardPool(): BigDecimal {
+    let value = this.get("treasuryBaseRewardPool");
+    return value!.toBigDecimal();
   }
 
-  set virtualPrice(value: BigInt) {
-    this.set("virtualPrice", Value.fromBigInt(value));
+  set treasuryBaseRewardPool(value: BigDecimal) {
+    this.set("treasuryBaseRewardPool", Value.fromBigDecimal(value));
+  }
+
+  get treasuryIlluvium(): BigDecimal {
+    let value = this.get("treasuryIlluvium");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryIlluvium(value: BigDecimal) {
+    this.set("treasuryIlluvium", Value.fromBigDecimal(value));
   }
 }
 

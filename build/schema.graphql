@@ -1,8 +1,9 @@
-type BaseRewardPool @entity {
+type EthMetrics @entity {
   id: ID!
   timestamp: BigInt!
-  Lp: BigInt!
-  virtualPrice: BigInt!
+  treasuryMatic: BigDecimal!
+  treasuryBaseRewardPool: BigDecimal!
+  treasuryIlluvium: BigDecimal!
 }
 
 type Tor @entity {

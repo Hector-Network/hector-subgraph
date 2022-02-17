@@ -2,9 +2,12 @@
   "name": "initialhec",
   "license": "UNLICENSED",
   "scripts": {
-    "codegen": "graph codegen subgraph.mainnet.yaml subgraph.yaml",
-    "build": "graph build subgraph.mainnet.yaml subgraph.yaml",
-    "deploy": "npm run codegen && npm run build && graph deploy --node https://api.thegraph.com/deploy/ hectordao-hec/hector-dao-alt",
+    "codegen": "graph codegen subgraph.yaml",
+    "codegen:mainnet": "graph codegen subgraph.mainnet.yaml",
+    "build": "graph build subgraph.yaml",
+    "build:mainnet": "graph build subgraph.mainnet.yaml",
+    "deploy": "npm run codegen && npm run build && graph deploy  --node https://api.thegraph.com/deploy/ hectordao-hec/hector-dao-alt subgraph.yaml",
+    "deploy:mainnet": "npm run codegen:mainnet && npm run build:mainnet && graph deploy  --node https://api.thegraph.com/deploy/ hectordao-hec/hector-dao-alt subgraph.mainnet.yaml",
     "create-local": "graph create --node http://localhost:8020/ hectordao-hec/hector-dao",
     "remove-local": "graph remove --node http://localhost:8020/ hectordao-hec/hector-dao",
     "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 hectordao-hec/hector-dao"
