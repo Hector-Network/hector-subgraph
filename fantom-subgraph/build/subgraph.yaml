@@ -8,7 +8,7 @@ dataSources:
     source:
       address: "0x9ae7972BA46933B3B20aaE7Acbf6C311847aCA40"
       abi: HectorStaking
-      startBlock: 30657614
+      startBlock: 20816532
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -48,7 +48,7 @@ dataSources:
     source:
       address: "0xD12930C8deeDafD788F437879cbA1Ad1E3908Cc5"
       abi: HectorStaking
-      startBlock: 31195377
+      startBlock: 22030704
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -88,7 +88,7 @@ dataSources:
     source:
       address: "0x36f26880c6406b967bdb9901cde43abc9d53f106"
       abi: sHectorERC20
-      startBlock: 31009808
+      startBlock: 20816532
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -112,7 +112,7 @@ dataSources:
     source:
       address: "0x75bdeF24285013387A47775828bEC90b91Ca9a5F"
       abi: sHectorERC20
-      startBlock: 31195334
+      startBlock: 22030704
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
@@ -136,7 +136,7 @@ dataSources:
     source:
       address: "0x74E23dF9110Aa9eA0b6ff2fAEE01e740CA1c642e"
       abi: Tor
-      startBlock: 31195563
+      startBlock: 28730052
     mapping:
       kind: ethereum/events
       apiVersion: 0.0.5
