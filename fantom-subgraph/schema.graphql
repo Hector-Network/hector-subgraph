@@ -54,8 +54,7 @@ type ProtocolMetric @entity {
   treasuryCRVMarketValue: BigDecimal!
   treasuryWETHRiskFreeValue: BigDecimal!
   treasuryWETHMarketValue: BigDecimal!
-  bankBorrowed: BigDecimal!
-  bankSupplied: BigDecimal!
+  curveInvestments: BigDecimal!
 }
 
 type LastBlock @entity {

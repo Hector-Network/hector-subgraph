@@ -307,13 +307,13 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         mv,
         rfv,
         // treasuryDaiRiskFreeValue = DAI RFV + DAI
-        hecdaiRFV.plus(toDecimal(daiBalance, 18)).plus(daiInvestments),
+        hecdaiRFV.plus(toDecimal(daiBalance, 18)),
         // treasuryUsdcRiskFreeValue = USDC RFV + USDC
-        hecusdcRFV.plus(toDecimal(usdcBalance, 6)).plus(usdcInvestments),
+        hecusdcRFV.plus(toDecimal(usdcBalance, 6)),
         // treasuryDaiMarketValue = DAI LP + DAI
-        hecdaiValue.plus(toDecimal(daiBalance, 18)).plus(daiInvestments),
+        hecdaiValue.plus(toDecimal(daiBalance, 18)),
         // treasuryUsdcMarketValue = USDC LP + USDC
-        hecusdcValue.plus(toDecimal(usdcBalance, 6)).plus(usdcInvestments),
+        hecusdcValue.plus(toDecimal(usdcBalance, 6)),
         wftmRFV,
         wftmValue,
         toDecimal(mimBalance, 18),
