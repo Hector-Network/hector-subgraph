@@ -1,0 +1,16 @@
+{
+  "name": "hector-eth",
+  "license": "UNLICENSED",
+  "scripts": {
+    "codegen": "graph codegen",
+    "build": "graph build",
+    "deploy": "npm run codegen && npm run build && graph deploy  --node https://api.thegraph.com/deploy/ hectordao-hec/hector-eth",
+    "create-local": "graph create --node http://localhost:8020/ hectordao-hec/hector-eth",
+    "remove-local": "graph remove --node http://localhost:8020/ hectordao-hec/hector-eth",
+    "deploy-local": "graph deploy --node http://localhost:8020/ --ipfs http://localhost:5001 hectordao-hec/hector-eth"
+  },
+  "dependencies": {
+    "@graphprotocol/graph-cli": "0.26.0",
+    "@graphprotocol/graph-ts": "0.24.1"
+  }
+}

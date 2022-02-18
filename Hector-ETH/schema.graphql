@@ -1,0 +1,5 @@
+type EthMetric @entity {
+  id: ID!
+  timestamp: BigInt!
+  treasuryBaseRewardPool: BigDecimal!
+}

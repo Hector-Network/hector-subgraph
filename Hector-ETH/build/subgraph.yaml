@@ -1,0 +1,26 @@
+specVersion: 0.0.3
+schema:
+  file: schema.graphql
+dataSources:
+  - kind: ethereum/contract
+    name: EthMetrics
+    network: mainnet
+    source:
+      address: "0x7e2b9B5244bcFa5108A76D5E7b507CFD5581AD4A"
+      abi: BaseRewardPool
+      startBlock: 14186757
+    mapping:
+      kind: ethereum/events
+      apiVersion: 0.0.5
+      language: wasm/assemblyscript
+      entities:
+        - EthMetric
+      abis:
+        - name: BaseRewardPool
+          file: EthMetrics\abis\BaseRewardPool.json
+        - name: WormHole
+          file: EthMetrics\abis\WormHole.json
+      callHandlers:
+        - function: withdrawAndUnwrap(uint256,bool)
+          handler: handleWithdrawAndUnwrap
+      file: EthMetrics\EthMetrics.wasm
