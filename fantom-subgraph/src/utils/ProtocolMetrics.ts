@@ -51,6 +51,8 @@ import {
 import { getTORTvl } from '../Tor';
 const TOR_LP_POOL_BLOCK = '28731023';
 const BANK_BLOCK = '29042732';
+const FANTOM_VALIDATOR_AMOUNT = '500000';
+const FANTOM_VALIDATOR_BLOCK = '31262749';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
     let id = blockNumber.minus(blockNumber.mod(BigInt.fromString("16000")));
@@ -96,6 +98,7 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.bankSupplied = bigDecimal.fromString('0');
         protocolMetric.treasuryDaiLPMarketValue = bigDecimal.fromString('0');
         protocolMetric.treasuryUsdcLPMarketValue = bigDecimal.fromString('0');
+        protocolMetric.treasuryFantomValidatorValue = bigDecimal.fromString('0');
 
         protocolMetric.save()
     }
@@ -168,6 +171,11 @@ function getHECGOHMReserves(pair: UniswapV2Pair): BigDecimal[] {
     let hecReserves = toDecimal(reserves.value0, 9)
     let gohmReserves = toDecimal(reserves.value1, 18)
     return [hecReserves, gohmReserves]
+}
+
+function getFantomValidatorAmount(): BigDecimal {
+    log.debug('VALIDATOR', [toDecimal(BigInt.fromString(FANTOM_VALIDATOR_AMOUNT)).toString()])
+    return BigDecimal.fromString(FANTOM_VALIDATOR_AMOUNT).times(getFTMUSDRate());
 }
 
 function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
@@ -447,6 +455,10 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryWETHMarketValue = mv_rfv[23]
     pm.treasuryDaiLPMarketValue = mv_rfv[24]
     pm.treasuryUsdcLPMarketValue = mv_rfv[25]
+
+    if (blockNumber.ge(BigInt.fromString(FANTOM_VALIDATOR_BLOCK))) {
+        pm.treasuryFantomValidatorValue = getFantomValidatorAmount();
+    }
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
