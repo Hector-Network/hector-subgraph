@@ -173,11 +173,6 @@ function getHECGOHMReserves(pair: UniswapV2Pair): BigDecimal[] {
     return [hecReserves, gohmReserves]
 }
 
-function getFantomValidatorAmount(): BigDecimal {
-    log.debug('VALIDATOR', [toDecimal(BigInt.fromString(FANTOM_VALIDATOR_AMOUNT)).toString()])
-    return BigDecimal.fromString(FANTOM_VALIDATOR_AMOUNT).times(getFTMUSDRate());
-}
-
 function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     const rfvRatio = BigDecimal.fromString('0.5')
     let daiERC20 = ERC20.bind(Address.fromString(ERC20DAI_CONTRACT))
@@ -203,6 +198,10 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let wftmBalance = wftmERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
     let wftmRFV = wftmValue.times(rfvRatio)
+    let fantomValidatorValue = BigDecimal.fromString('0');
+    if (blockNumber.ge(BigInt.fromString(FANTOM_VALIDATOR_BLOCK))) {
+        fantomValidatorValue = BigDecimal.fromString(FANTOM_VALIDATOR_AMOUNT).times(getFTMUSDRate());
+    }
 
     // Calculate boo value
     let booBalance = booERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
@@ -289,7 +288,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue).plus(hecgohmValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
-    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
+    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).plus(fantomValidatorValue);
     let rfv = stableValueDecimal.plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
     log.debug("ORIGINAL VAL {}", [stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).toString()])
@@ -347,7 +346,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         wethRFV,
         wethValue,
         hecdaiValue,
-        hecusdcValue
+        hecusdcValue,
+        fantomValidatorValue
     ]
 }
 
@@ -456,9 +456,8 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryDaiLPMarketValue = mv_rfv[24]
     pm.treasuryUsdcLPMarketValue = mv_rfv[25]
 
-    if (blockNumber.ge(BigInt.fromString(FANTOM_VALIDATOR_BLOCK))) {
-        pm.treasuryFantomValidatorValue = getFantomValidatorAmount();
-    }
+    pm.treasuryFantomValidatorValue = mv_rfv[26];
+
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)
