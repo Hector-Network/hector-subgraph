@@ -232,7 +232,15 @@ export class ProtocolMetric extends Entity {
     );
     this.set("treasuryDaiMarketValue", Value.fromBigDecimal(BigDecimal.zero()));
     this.set(
+      "treasuryDaiLPMarketValue",
+      Value.fromBigDecimal(BigDecimal.zero())
+    );
+    this.set(
       "treasuryUsdcMarketValue",
+      Value.fromBigDecimal(BigDecimal.zero())
+    );
+    this.set(
+      "treasuryUsdcLPMarketValue",
       Value.fromBigDecimal(BigDecimal.zero())
     );
     this.set(
@@ -471,6 +479,15 @@ export class ProtocolMetric extends Entity {
     this.set("treasuryDaiMarketValue", Value.fromBigDecimal(value));
   }
 
+  get treasuryDaiLPMarketValue(): BigDecimal {
+    let value = this.get("treasuryDaiLPMarketValue");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryDaiLPMarketValue(value: BigDecimal) {
+    this.set("treasuryDaiLPMarketValue", Value.fromBigDecimal(value));
+  }
+
   get treasuryUsdcMarketValue(): BigDecimal {
     let value = this.get("treasuryUsdcMarketValue");
     return value!.toBigDecimal();
@@ -478,6 +495,15 @@ export class ProtocolMetric extends Entity {
 
   set treasuryUsdcMarketValue(value: BigDecimal) {
     this.set("treasuryUsdcMarketValue", Value.fromBigDecimal(value));
+  }
+
+  get treasuryUsdcLPMarketValue(): BigDecimal {
+    let value = this.get("treasuryUsdcLPMarketValue");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryUsdcLPMarketValue(value: BigDecimal) {
+    this.set("treasuryUsdcLPMarketValue", Value.fromBigDecimal(value));
   }
 
   get treasuryWFTMMarketValue(): BigDecimal {

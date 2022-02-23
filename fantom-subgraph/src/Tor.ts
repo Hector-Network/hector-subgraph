@@ -14,29 +14,41 @@ import { FarmingAggregator } from "../generated/Tor/FarmingAggregator";
 export function handleTransfer(event: Transfer): void {
   const id = event.transaction.hash.toHex();
   let currentTor = Tor.load(id);
-  if (currentTor != null) {
-    return;
+  // if (currentTor == null) {
+  //   return;
+  // }
+
+  // const contract = TorContract.bind(Address.fromString(TOR_CONTRACT));
+  // const currentSupply = toDecimal(contract.totalSupply(), contract.decimals());
+
+  // const lastTor = Tor.load("0");
+  // if (lastTor && lastTor.supply.equals(currentSupply)) {
+  //   // TOR supply hasn't changed. Avoid saving this transaction and creating useless duplicates.
+  //   return;
+  // }
+
+  // currentTor = new Tor(id);
+  // currentTor.supply = currentSupply;
+  // currentTor.timestamp = event.block.timestamp;
+  // currentTor.torTVL = getTORTvl();
+  // currentTor.apy = getTorAPY();
+  // currentTor.save();
+
+  // // Save for the next TOR event handler.
+  // currentTor.id = "0";
+  // currentTor.save();
+
+  if (currentTor == null) {
+    const contract = TorContract.bind(Address.fromString(TOR_CONTRACT));
+    const currentSupply = toDecimal(contract.totalSupply(), contract.decimals());
+
+    currentTor = new Tor(id);
+    currentTor.supply = currentSupply;
+    currentTor.timestamp = event.block.timestamp;
+    currentTor.torTVL = getTORTvl();
+    currentTor.apy = getTorAPY();
+    currentTor.save();
   }
-
-  const contract = TorContract.bind(Address.fromString(TOR_CONTRACT));
-  const currentSupply = toDecimal(contract.totalSupply(), contract.decimals());
-
-  const lastTor = Tor.load("0");
-  if (lastTor && lastTor.supply.equals(currentSupply)) {
-    // TOR supply hasn't changed. Avoid saving this transaction and creating useless duplicates.
-    return;
-  }
-
-  currentTor = new Tor(id);
-  currentTor.supply = currentSupply;
-  currentTor.timestamp = event.block.timestamp;
-  currentTor.torTVL = getTORTvl();
-  currentTor.apy = getTorAPY();
-  currentTor.save();
-
-  // Save for the next TOR event handler.
-  currentTor.id = "0";
-  currentTor.save();
 }
 
 export function getTORTvl(): BigDecimal {

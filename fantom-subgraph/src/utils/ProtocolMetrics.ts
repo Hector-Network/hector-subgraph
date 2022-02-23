@@ -94,6 +94,8 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryWETHMarketValue = BigDecimal.fromString("0")
         protocolMetric.bankBorrowed = bigDecimal.fromString('0');
         protocolMetric.bankSupplied = bigDecimal.fromString('0');
+        protocolMetric.treasuryDaiLPMarketValue = bigDecimal.fromString('0');
+        protocolMetric.treasuryUsdcLPMarketValue = bigDecimal.fromString('0');
 
         protocolMetric.save()
     }
@@ -280,7 +282,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue);
-    let rfv = stableValueDecimal.plus(rfvLpValue).plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
+    let rfv = stableValueDecimal.plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
     log.debug("ORIGINAL VAL {}", [stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).toString()])
     log.debug("Treasury Market Value {}", [mv.toString()])
@@ -306,14 +308,14 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     return [
         mv,
         rfv,
-        // treasuryDaiRiskFreeValue = DAI RFV + DAI
-        hecdaiRFV.plus(toDecimal(daiBalance, 18)),
-        // treasuryUsdcRiskFreeValue = USDC RFV + USDC
-        hecusdcRFV.plus(toDecimal(usdcBalance, 6)),
-        // treasuryDaiMarketValue = DAI LP + DAI
-        hecdaiValue.plus(toDecimal(daiBalance, 18)),
-        // treasuryUsdcMarketValue = USDC LP + USDC
-        hecusdcValue.plus(toDecimal(usdcBalance, 6)),
+        // treasuryDaiRiskFreeValue = DAI RFV 
+        hecdaiRFV,
+        // treasuryUsdcRiskFreeValue = USDC RFV
+        hecusdcRFV,
+        // treasuryDaiMarketValue = DAI
+        toDecimal(daiBalance, 18),
+        // treasuryUsdcMarketValue = USDC
+        toDecimal(usdcBalance, 6),
         wftmRFV,
         wftmValue,
         toDecimal(mimBalance, 18),
@@ -335,7 +337,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         crvRFV,
         crvValue,
         wethRFV,
-        wethValue
+        wethValue,
+        hecdaiValue,
+        hecusdcValue
     ]
 }
 
@@ -441,6 +445,8 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryCRVMarketValue = mv_rfv[21]
     pm.treasuryWETHRiskFreeValue = mv_rfv[22]
     pm.treasuryWETHMarketValue = mv_rfv[23]
+    pm.treasuryDaiLPMarketValue = mv_rfv[24]
+    pm.treasuryUsdcLPMarketValue = mv_rfv[25]
 
     // Rebase rewards, APY, rebase
     pm.nextDistributedHec = getNextHECRebase(blockNumber)

@@ -38,7 +38,9 @@ type ProtocolMetric @entity {
   treasuryFRAXRiskFreeValue: BigDecimal!
   treasuryGOHMRiskFreeValue: BigDecimal!
   treasuryDaiMarketValue: BigDecimal!
+  treasuryDaiLPMarketValue: BigDecimal!
   treasuryUsdcMarketValue: BigDecimal!
+  treasuryUsdcLPMarketValue: BigDecimal!
   treasuryWFTMMarketValue: BigDecimal!
   treasuryMIMMarketValue: BigDecimal!
   treasuryFRAXMarketValue: BigDecimal!

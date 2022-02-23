@@ -29,7 +29,7 @@ export function handleWithdrawAndUnwrap(call: WithdrawAllAndUnwrapCall): void {
     rewardPool.save();
 }
 
-function getBaseRewardPool(): BigDecimal {
+export function getBaseRewardPool(): BigDecimal {
     const baseRewardPoolContract = BaseRewardPool.bind(Address.fromString(BASE_REWARD_POOL_ADDRESS));
     const wormHoleContract = WormHole.bind(Address.fromString(WORMHOLE_ADDRESS));
     const lpBalance = toDecimal(baseRewardPoolContract.balanceOf(Address.fromString(CONVEX_ALLOCATOR_ADDRESS)), 18);
