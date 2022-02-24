@@ -7,6 +7,7 @@ import { ERC20 } from '../../generated/HectorStakingV1/ERC20';
 import { UniswapV2Pair } from '../../generated/HectorStakingV1/UniswapV2Pair';
 import { HectorStaking } from '../../generated/HectorStakingV1/HectorStaking';
 import { bank } from '../../generated/HectorStakingV2/bank';
+import { TorLPPool } from '../../generated/HectorStakingV2/TorLPPool';
 
 import { ethereum } from '@graphprotocol/graph-ts'
 
@@ -41,14 +42,15 @@ import {
     CRV_ERC20_CONTRACT,
     WETH_ERC20_CONTRACT,
     BANK_UNITROLLER,
-    BANK_CONTRACT
+    BANK_CONTRACT,
+    TOR_LP_POOL_ADDRESS,
+    TOR_SPOOKY_LP_ADDRESS
 } from './Constants';
 import { toDecimal } from './Decimals';
 import {
     getHECUSDRate, getDiscountedPairUSD, getPairUSD, getFTMUSDRate,
     getGOHMUSDRate, getBOOUSDRate, getCRVUSDRate, getWETHUSDRate
 } from './Price';
-import { getTORTvl } from '../Tor';
 const TOR_LP_POOL_BLOCK = '28731023';
 const BANK_BLOCK = '29042732';
 const FANTOM_VALIDATOR_AMOUNT = '500000';
@@ -173,6 +175,14 @@ function getHECGOHMReserves(pair: UniswapV2Pair): BigDecimal[] {
     return [hecReserves, gohmReserves]
 }
 
+function getTorLpValue(): BigDecimal {
+    let torLPERC20 = ERC20.bind(Address.fromString(TOR_SPOOKY_LP_ADDRESS))
+    let torLpContract = TorLPPool.bind(Address.fromString(TOR_LP_POOL_ADDRESS));
+    let torVirtualPrice = toDecimal(torLpContract.get_virtual_price(), 18);
+    let torLPBalance = toDecimal(torLPERC20.balanceOf(Address.fromString(TREASURY_ADDRESS)), 18);
+    return torLPBalance.times(torVirtualPrice);
+}
+
 function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     const rfvRatio = BigDecimal.fromString('0.5')
     let daiERC20 = ERC20.bind(Address.fromString(ERC20DAI_CONTRACT))
@@ -289,6 +299,10 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).plus(fantomValidatorValue);
+    if (blockNumber.gt(BigInt.fromString(TOR_LP_POOL_BLOCK))) {
+        log.debug('TOR LP VALUE {}', [getTorLpValue().toString()])
+        mv = mv.plus(getTorLpValue());
+    }
     let rfv = stableValueDecimal.plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
     log.debug("ORIGINAL VAL {}", [stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).toString()])
