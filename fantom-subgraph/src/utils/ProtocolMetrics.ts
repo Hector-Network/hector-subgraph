@@ -179,7 +179,16 @@ function getTorLpValue(): BigDecimal {
     let torLPERC20 = ERC20.bind(Address.fromString(TOR_SPOOKY_LP_ADDRESS))
     let torLpContract = TorLPPool.bind(Address.fromString(TOR_LP_POOL_ADDRESS));
     let torVirtualPrice = toDecimal(torLpContract.get_virtual_price(), 18);
-    let torLPBalance = toDecimal(torLPERC20.balanceOf(Address.fromString(TREASURY_ADDRESS)), 18);
+
+    const getTorLpBalance = torLPERC20.try_balanceOf(Address.fromString(TREASURY_ADDRESS));
+    if (getTorLpBalance.reverted) {
+        const getTorLp = torLPERC20.try_balanceOf(Address.fromString(TREASURY_ADDRESS));
+        if (getTorLp.reverted) {
+            return BigDecimal.fromString('0');
+        }
+        return toDecimal(getTorLp.value, 18).times(torVirtualPrice);
+    }
+    let torLPBalance = toDecimal(getTorLpBalance.value, 18);
     return torLPBalance.times(torVirtualPrice);
 }
 
@@ -209,8 +218,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
     let wftmRFV = wftmValue.times(rfvRatio)
     let fantomValidatorValue = BigDecimal.fromString('0');
-    if (blockNumber.ge(BigInt.fromString(FANTOM_VALIDATOR_BLOCK))) {
-        fantomValidatorValue = BigDecimal.fromString(FANTOM_VALIDATOR_AMOUNT).times(getFTMUSDRate());
+    if (blockNumber.gt(BigInt.fromString(FANTOM_VALIDATOR_BLOCK))) {
+        fantomValidatorValue = BigDecimal.fromString(FANTOM_VALIDATOR_AMOUNT).times(getFTMUSDRate())
     }
 
     // Calculate boo value
@@ -436,7 +445,7 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     //Total Value Locked
     pm.totalValueLocked = pm.sHecCirculatingSupply.times(pm.hecPrice)
 
-    if (blockNumber.ge(BigInt.fromString(BANK_BLOCK))) {
+    if (blockNumber.gt(BigInt.fromString(BANK_BLOCK))) {
         pm.bankSupplied = getBankLendingValues()[0];
         pm.bankBorrowed = getBankLendingValues()[1]
     }
@@ -469,7 +478,6 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryWETHMarketValue = mv_rfv[23]
     pm.treasuryDaiLPMarketValue = mv_rfv[24]
     pm.treasuryUsdcLPMarketValue = mv_rfv[25]
-
     pm.treasuryFantomValidatorValue = mv_rfv[26];
 
 
