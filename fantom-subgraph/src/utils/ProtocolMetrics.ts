@@ -101,6 +101,7 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryDaiLPMarketValue = bigDecimal.fromString('0');
         protocolMetric.treasuryUsdcLPMarketValue = bigDecimal.fromString('0');
         protocolMetric.treasuryFantomValidatorValue = bigDecimal.fromString('0');
+        protocolMetric.treasuryTORLPValue = bigDecimal.fromString('0');
 
         protocolMetric.save()
     }
@@ -308,9 +309,11 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
     let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).plus(fantomValidatorValue);
+    let torLpValue = bigDecimal.fromString('0');
     if (blockNumber.gt(BigInt.fromString(TOR_LP_POOL_BLOCK))) {
         log.debug('TOR LP VALUE {}', [getTorLpValue().toString()])
-        mv = mv.plus(getTorLpValue());
+        torLpValue = getTorLpValue();
+        mv = mv.plus(torLpValue);
     }
     let rfv = stableValueDecimal.plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
@@ -370,7 +373,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         wethValue,
         hecdaiValue,
         hecusdcValue,
-        fantomValidatorValue
+        fantomValidatorValue,
+        torLpValue
     ]
 }
 
@@ -479,6 +483,7 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryDaiLPMarketValue = mv_rfv[24]
     pm.treasuryUsdcLPMarketValue = mv_rfv[25]
     pm.treasuryFantomValidatorValue = mv_rfv[26];
+    pm.treasuryTORLPValue = mv_rfv[27];
 
 
     // Rebase rewards, APY, rebase

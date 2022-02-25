@@ -57,6 +57,7 @@ type ProtocolMetric @entity {
   treasuryWETHRiskFreeValue: BigDecimal!
   treasuryWETHMarketValue: BigDecimal!
   treasuryFantomValidatorValue: BigDecimal!
+  treasuryTORLPValue: BigDecimal!
   bankBorrowed: BigDecimal!
   bankSupplied: BigDecimal!
 }
