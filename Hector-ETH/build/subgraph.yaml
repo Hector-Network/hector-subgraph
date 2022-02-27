@@ -15,11 +15,21 @@ dataSources:
       language: wasm/assemblyscript
       entities:
         - EthMetric
+        - Token
+        - Pool
       abis:
         - name: BaseRewardPool
           file: EthMetrics\abis\BaseRewardPool.json
         - name: WormHole
           file: EthMetrics\abis\WormHole.json
+        - name: Matic
+          file: EthMetrics\abis\Matic.json
+        - name: Illuvium
+          file: EthMetrics\abis\Illuvium.json
+        - name: UniswapV3Factory
+          file: EthMetrics\abis\UniswapV3Factory.json
+        - name: UniswapV3Pool
+          file: EthMetrics\abis\UniswapV3Pool.json
       callHandlers:
         - function: withdrawAndUnwrap(uint256,bool)
           handler: handleWithdrawAndUnwrap

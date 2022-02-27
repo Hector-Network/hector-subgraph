@@ -2,4 +2,113 @@ type EthMetric @entity {
   id: ID!
   timestamp: BigInt!
   treasuryBaseRewardPool: BigDecimal!
+  treasuryMaticBalance: BigDecimal!
+  treasuryIlluviumBalance: BigDecimal!
+}
+
+type Token @entity {
+  id: ID!
+  symbol: String!
+  name: String!
+  decimals: BigInt!
+  totalSupply: BigInt!
+  volume: BigDecimal!
+  volumeUSD: BigDecimal!
+  untrackedVolumeUSD: BigDecimal!
+  feesUSD: BigDecimal!
+  txCount: BigInt!
+  poolCount: BigInt!
+  totalValueLocked: BigDecimal!
+  totalValueLockedUSD: BigDecimal!
+  totalValueLockedUSDUntracked: BigDecimal!
+  derivedETH: BigDecimal!
+  whitelistPools: [Pool!]!
+}
+
+type Pool @entity {
+  id: ID!
+  createdAtTimestamp: BigInt!
+  createdAtBlockNumber: BigInt!
+  token0: Token!
+  token1: Token!
+  feeTier: BigInt!
+  liquidity: BigInt!
+  sqrtPrice: BigInt!
+  feeGrowthGlobal0X128: BigInt!
+  feeGrowthGlobal1X128: BigInt!
+  token0Price: BigDecimal!
+  token1Price: BigDecimal!
+  tick: BigInt
+  observationIndex: BigInt!
+  volumeToken0: BigDecimal!
+  volumeToken1: BigDecimal!
+  volumeUSD: BigDecimal!
+  untrackedVolumeUSD: BigDecimal!
+  feesUSD: BigDecimal!
+  txCount: BigInt!
+  collectedFeesToken0: BigDecimal!
+  collectedFeesToken1: BigDecimal!
+  collectedFeesUSD: BigDecimal!
+  totalValueLockedToken0: BigDecimal!
+  totalValueLockedToken1: BigDecimal!
+  totalValueLockedETH: BigDecimal!
+  totalValueLockedUSD: BigDecimal!
+  totalValueLockedUSDUntracked: BigDecimal!
+  liquidityProviderCount: BigInt! # used to detect new exchanges
+}
+
+type Transaction @entity {
+  # txn hash
+  id: ID!
+  # block txn was included in
+  blockNumber: BigInt!
+  # timestamp txn was confirmed
+  timestamp: BigInt!
+  # gas used during txn execution
+  gasUsed: BigInt!
+  gasPrice: BigInt!
+  # derived values
+}
+
+type PoolDayData @entity {
+  # timestamp rounded to current day by dividing by 86400
+  id: ID!
+  # timestamp rounded to current day by dividing by 86400
+  date: Int!
+  # pointer to pool
+  pool: Pool!
+  # in range liquidity at end of period
+  liquidity: BigInt!
+  # current price tracker at end of period
+  sqrtPrice: BigInt!
+  # price of token0 - derived from sqrtPrice
+  token0Price: BigDecimal!
+  # price of token1 - derived from sqrtPrice
+  token1Price: BigDecimal!
+  # current tick at end of period
+  tick: BigInt
+  # tracker for global fee growth
+  feeGrowthGlobal0X128: BigInt!
+  # tracker for global fee growth
+  feeGrowthGlobal1X128: BigInt!
+  # tvl derived in USD at end of period
+  tvlUSD: BigDecimal!
+  # volume in token0
+  volumeToken0: BigDecimal!
+  # volume in token1
+  volumeToken1: BigDecimal!
+  # volume in USD
+  volumeUSD: BigDecimal!
+  # fees in USD
+  feesUSD: BigDecimal!
+  # numebr of transactions during period
+  txCount: BigInt!
+  # opening price of token0
+  open: BigDecimal!
+  # high price of token0
+  high: BigDecimal!
+  # low price of token0
+  low: BigDecimal!
+  # close price of token0
+  close: BigDecimal!
 }
