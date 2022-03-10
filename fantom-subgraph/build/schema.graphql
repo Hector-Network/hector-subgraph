@@ -33,11 +33,15 @@ type ProtocolMetric @entity {
   nextDistributedHec: BigDecimal!
   treasuryDaiRiskFreeValue: BigDecimal!
   treasuryUsdcRiskFreeValue: BigDecimal!
+  treasuryUsdcTokenAmount: BigDecimal!
   treasuryWFTMRiskFreeValue: BigDecimal!
+  treasuryWFTMTokenAmount: BigDecimal!
   treasuryMIMRiskFreeValue: BigDecimal!
+  treasuryFRAXTokenAmount: BigDecimal!
   treasuryFRAXRiskFreeValue: BigDecimal!
   treasuryGOHMRiskFreeValue: BigDecimal!
   treasuryDaiMarketValue: BigDecimal!
+  treasuryDaiTokenAmount: BigDecimal!
   treasuryDaiLPMarketValue: BigDecimal!
   treasuryUsdcMarketValue: BigDecimal!
   treasuryUsdcLPMarketValue: BigDecimal!
@@ -52,14 +56,20 @@ type ProtocolMetric @entity {
   treasuryHecFraxPOL: BigDecimal!
   treasuryBOORiskFreeValue: BigDecimal!
   treasuryBOOMarketValue: BigDecimal!
+  treasuryBOOTokenAmount: BigDecimal!
   treasuryCRVRiskFreeValue: BigDecimal!
   treasuryCRVMarketValue: BigDecimal!
+  treasuryCRVTokenAmount: BigDecimal!
   treasuryWETHRiskFreeValue: BigDecimal!
   treasuryWETHMarketValue: BigDecimal!
+  treasuryWETHTokenAmount: BigDecimal!
   treasuryFantomValidatorValue: BigDecimal!
   treasuryTORLPValue: BigDecimal!
   bankBorrowed: BigDecimal!
   bankSupplied: BigDecimal!
+  hecDaiTokenAmount: BigDecimal!
+  hecUsdcTokenAmount: BigDecimal!
+  hecFraxTokenAmount: BigDecimal!
 }
 
 type LastBlock @entity {

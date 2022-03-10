@@ -102,6 +102,16 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.treasuryUsdcLPMarketValue = bigDecimal.fromString('0');
         protocolMetric.treasuryFantomValidatorValue = bigDecimal.fromString('0');
         protocolMetric.treasuryTORLPValue = bigDecimal.fromString('0');
+        protocolMetric.treasuryDaiTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.treasuryUsdcTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.treasuryWFTMTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.treasuryFRAXTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.treasuryBOOTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.treasuryCRVTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.treasuryWETHTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.hecDaiTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.hecUsdcTokenAmount = BigDecimal.fromString("0")
+        protocolMetric.hecFraxTokenAmount = BigDecimal.fromString("0")
 
         protocolMetric.save()
     }
@@ -253,8 +263,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let hecusdcValue = BigDecimal.fromString('0');
     let hecusdcRFV = BigDecimal.fromString('0')
     let hecusdcPOL = BigDecimal.fromString('0')
+    let hecusdcBalance: BigInt = BigInt.fromString('0');
     if (blockNumber.gt(BigInt.fromString(SPIRIT_HECUSDC_PAIR_BLOCK))) {
-        let hecusdcBalance = hecusdcPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
+        hecusdcBalance = hecusdcPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecusdcTotalLP = toDecimal(hecusdcPair.totalSupply(), 18)
         let hecusdcReserves = getHECUSDCReserves(hecusdcPair)
         hecusdcPOL = toDecimal(hecusdcBalance, 18).div(hecusdcTotalLP).times(BigDecimal.fromString("100"))
@@ -266,8 +277,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let hecfraxValue = BigDecimal.fromString('0');
     let hecfraxRFV = BigDecimal.fromString('0')
     let hecfraxPOL = BigDecimal.fromString('0')
+    let hecfraxBalance: BigInt = BigInt.fromString('0');
     if (blockNumber.gt(BigInt.fromString(SPOOKY_HECFRAX_PAIR_BLOCK))) {
-        let hecfraxBalance = hecfraxPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
+        hecfraxBalance = hecfraxPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecfraxTotalLP = toDecimal(hecfraxPair.totalSupply(), 18)
         let hecfraxReserves = getHECFRAXReserves(hecfraxPair)
         hecfraxPOL = toDecimal(hecfraxBalance, 18).div(hecfraxTotalLP).times(BigDecimal.fromString("100"))
@@ -279,8 +291,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let hecgohmValue = BigDecimal.fromString("0")
     let hecgohmRFV = BigDecimal.fromString("0")
     let hecgohmPOL = BigDecimal.fromString('0')
+    let hecgohmBalance: BigInt = BigInt.fromString('0');
     if (blockNumber.gt(BigInt.fromString(SPIRIT_HECGOHM_PAIR_BLOCK))) {
-        let hecgohmBalance = hecgohmPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
+        hecgohmBalance = hecgohmPair.balanceOf(Address.fromString(TREASURY_ADDRESS))
         let hecgohmTotalLP = toDecimal(hecgohmPair.totalSupply(), 18)
         let hecgohmReserves = getHECGOHMReserves(hecgohmPair)
         hecgohmPOL = toDecimal(hecgohmBalance, 18).div(hecgohmTotalLP).times(BigDecimal.fromString('100'))
@@ -374,7 +387,17 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         hecdaiValue,
         hecusdcValue,
         fantomValidatorValue,
-        torLpValue
+        torLpValue,
+        toDecimal(daiBalance, 18),
+        toDecimal(usdcBalance, 6),
+        toDecimal(wftmBalance, 18),
+        toDecimal(fraxBalance, 18),
+        toDecimal(booBalance, 18),
+        toDecimal(crvBalance, 18),
+        toDecimal(wethBalance, 18),
+        toDecimal(hecdaiBalance.plus(hecdaiLockedBalance), 18),
+        toDecimal(hecusdcBalance, 6),
+        toDecimal(hecfraxBalance, 18)
     ]
 }
 
@@ -484,6 +507,16 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.treasuryUsdcLPMarketValue = mv_rfv[25]
     pm.treasuryFantomValidatorValue = mv_rfv[26];
     pm.treasuryTORLPValue = mv_rfv[27];
+    pm.treasuryDaiTokenAmount = mv_rfv[28];
+    pm.treasuryUsdcTokenAmount = mv_rfv[29];
+    pm.treasuryWFTMTokenAmount = mv_rfv[30];
+    pm.treasuryFRAXTokenAmount = mv_rfv[31];
+    pm.treasuryBOOTokenAmount = mv_rfv[32];
+    pm.treasuryCRVTokenAmount = mv_rfv[33];
+    pm.treasuryWETHTokenAmount = mv_rfv[34];
+    pm.hecDaiTokenAmount = mv_rfv[35];
+    pm.hecUsdcTokenAmount = mv_rfv[36];
+    pm.hecFraxTokenAmount = mv_rfv[37];
 
 
     // Rebase rewards, APY, rebase
