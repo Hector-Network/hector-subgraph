@@ -1,6 +1,6 @@
 import { Address, BigDecimal, BigInt } from "@graphprotocol/graph-ts";
 import { Tor } from "../generated/schema";
-import { Transfer, Tor as TorContract } from "../generated/Tor/Tor";
+import { Approval, Tor as TorContract } from "../generated/Tor/Tor";
 import {
   FARMING_AGGREGATOR_ADDRESS,
   FARMINNG_STAKING_REWARDS_ADDRESS,
@@ -11,7 +11,7 @@ import { toDecimal } from "./utils/Decimals";
 import { TorLPPool } from "../generated/Tor/TorLPPool";
 import { FarmingAggregator } from "../generated/Tor/FarmingAggregator";
 
-export function handleTransfer(event: Transfer): void {
+export function handleTransfer(event: Approval): void {
   const id = event.transaction.hash.toHex();
   let currentTor = Tor.load(id);
   // if (currentTor == null) {
@@ -39,16 +39,15 @@ export function handleTransfer(event: Transfer): void {
   // currentTor.save();
 
   if (currentTor == null) {
-    const contract = TorContract.bind(Address.fromString(TOR_CONTRACT));
-    const currentSupply = toDecimal(contract.totalSupply(), contract.decimals());
-
     currentTor = new Tor(id);
-    currentTor.supply = currentSupply;
-    currentTor.timestamp = event.block.timestamp;
-    currentTor.torTVL = getTORTvl();
-    currentTor.apy = getTorAPY();
-    currentTor.save();
   }
+  const contract = TorContract.bind(Address.fromString(TOR_CONTRACT));
+  const currentSupply = toDecimal(contract.totalSupply(), contract.decimals());
+  currentTor.supply = currentSupply;
+  currentTor.timestamp = event.block.timestamp;
+  currentTor.torTVL = getTORTvl();
+  currentTor.apy = getTorAPY();
+  currentTor.save();
 }
 
 export function getTORTvl(): BigDecimal {
