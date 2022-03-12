@@ -53,7 +53,7 @@ import {
 } from './Price';
 const TOR_LP_POOL_BLOCK = '28731023';
 const BANK_BLOCK = '29042732';
-const FANTOM_VALIDATOR_AMOUNT = '500000';
+const FANTOM_VALIDATOR_AMOUNT = '1000100';
 const FANTOM_VALIDATOR_BLOCK = '31262749';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {

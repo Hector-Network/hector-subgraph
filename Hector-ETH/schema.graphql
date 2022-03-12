@@ -3,7 +3,9 @@ type EthMetric @entity {
   timestamp: BigInt!
   treasuryBaseRewardPool: BigDecimal!
   treasuryMaticBalance: BigDecimal!
+  maticTokenAmount: BigDecimal!
   treasuryIlluviumBalance: BigDecimal!
+  illuviumTokenAmount: BigDecimal!
 }
 
 type Token @entity {

@@ -35,9 +35,15 @@ export function handleWithdrawAndUnwrap(call: WithdrawAllAndUnwrapCall): void {
     }
     rewardPool.timestamp = call.block.timestamp;
     // calculating pool deposit amount
+    const maticContract = Matic.bind(Address.fromString(MATIC_ADDRESS));
+    const maticBalance = toDecimal(maticContract.balanceOf(Address.fromString(ETH_WALLET_ADDRESS)), 18);
+    const illuviumContract = Illuvium.bind(Address.fromString(ILLUVIUM_ADDRESS));
+    const illuviumBalance = toDecimal(illuviumContract.balanceOf(Address.fromString(ETH_WALLET_ADDRESS)), 18);
     rewardPool.treasuryBaseRewardPool = getBaseRewardPool();
-    rewardPool.treasuryMaticBalance = getTreasuryMaticValue();
-    rewardPool.treasuryIlluviumBalance = getTreasuryIlluviumValue();
+    rewardPool.treasuryMaticBalance = getTreasuryMaticValue(maticBalance);
+    rewardPool.treasuryIlluviumBalance = getTreasuryIlluviumValue(illuviumBalance);
+    rewardPool.maticTokenAmount = maticBalance;
+    rewardPool.illuviumTokenAmount = illuviumBalance;
     rewardPool.save();
 }
 
@@ -49,9 +55,8 @@ export function getBaseRewardPool(): BigDecimal {
     return lpBalance.times(lpVirutalPrice);
 }
 
-function getTreasuryMaticValue(): BigDecimal {
-    const maticContract = Matic.bind(Address.fromString(MATIC_ADDRESS));
-    const maticBalance = toDecimal(maticContract.balanceOf(Address.fromString(ETH_WALLET_ADDRESS)), 18);
+function getTreasuryMaticValue(maticBalance: BigDecimal): BigDecimal {
+
     log.debug('Matic Balance {}', [maticBalance.toString()])
     const pair = UniswapV3Pool.bind(Address.fromString(MATIC_USDT_PAIR));
     const result = pair.try_slot0();
@@ -75,9 +80,7 @@ export function exponentToBigDecimal(decimals: BigInt): BigDecimal {
 }
 
 
-function getTreasuryIlluviumValue(): BigDecimal {
-    const illuviumContract = Illuvium.bind(Address.fromString(ILLUVIUM_ADDRESS));
-    const illuviumBalance = toDecimal(illuviumContract.balanceOf(Address.fromString(ETH_WALLET_ADDRESS)), 18);
+function getTreasuryIlluviumValue(illuviumBalance: BigDecimal): BigDecimal {
     const pair = UniswapV3Pool.bind(Address.fromString(IllUV_ETH_PAIR));
     const result = pair.try_slot0();
     if (!result.reverted) {

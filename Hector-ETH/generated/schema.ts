@@ -19,10 +19,12 @@ export class EthMetric extends Entity {
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
     this.set("treasuryBaseRewardPool", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryMaticBalance", Value.fromBigDecimal(BigDecimal.zero()));
+    this.set("maticTokenAmount", Value.fromBigDecimal(BigDecimal.zero()));
     this.set(
       "treasuryIlluviumBalance",
       Value.fromBigDecimal(BigDecimal.zero())
     );
+    this.set("illuviumTokenAmount", Value.fromBigDecimal(BigDecimal.zero()));
   }
 
   save(): void {
@@ -78,6 +80,15 @@ export class EthMetric extends Entity {
     this.set("treasuryMaticBalance", Value.fromBigDecimal(value));
   }
 
+  get maticTokenAmount(): BigDecimal {
+    let value = this.get("maticTokenAmount");
+    return value!.toBigDecimal();
+  }
+
+  set maticTokenAmount(value: BigDecimal) {
+    this.set("maticTokenAmount", Value.fromBigDecimal(value));
+  }
+
   get treasuryIlluviumBalance(): BigDecimal {
     let value = this.get("treasuryIlluviumBalance");
     return value!.toBigDecimal();
@@ -85,6 +96,15 @@ export class EthMetric extends Entity {
 
   set treasuryIlluviumBalance(value: BigDecimal) {
     this.set("treasuryIlluviumBalance", Value.fromBigDecimal(value));
+  }
+
+  get illuviumTokenAmount(): BigDecimal {
+    let value = this.get("illuviumTokenAmount");
+    return value!.toBigDecimal();
+  }
+
+  set illuviumTokenAmount(value: BigDecimal) {
+    this.set("illuviumTokenAmount", Value.fromBigDecimal(value));
   }
 }
 
