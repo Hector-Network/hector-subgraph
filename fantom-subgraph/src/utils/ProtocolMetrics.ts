@@ -53,7 +53,7 @@ import {
 } from './Price';
 const TOR_LP_POOL_BLOCK = '28731023';
 const BANK_BLOCK = '29042732';
-const FANTOM_VALIDATOR_AMOUNT = '838,870';
+const FANTOM_VALIDATOR_AMOUNT = '838870';
 const FANTOM_VALIDATOR_BLOCK = '31262749';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -330,7 +330,6 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     }
     let rfv = stableValueDecimal.plus(wftmRFV).plus(booRFV).plus(crvRFV).plus(wethRFV)
 
-    log.debug("ORIGINAL VAL {}", [stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).toString()])
     log.debug("Treasury Market Value {}", [mv.toString()])
     log.debug("Treasury RFV {}", [rfv.toString()])
     log.debug("Treasury Investments {}", [investments.toString()])
