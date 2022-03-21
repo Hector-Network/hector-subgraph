@@ -234,7 +234,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     }
 
     // Calculate boo value
-    let booBalance = booERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    // let booBalance = booERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let booBalance = BigInt.fromString('4462201');
     let booValue = toDecimal(booBalance, 18).times(getBOOUSDRate())
     let booRFV = booValue.times(rfvRatio)
 
@@ -244,7 +245,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let crvRFV = crvValue.times(rfvRatio)
 
     // Calculate weth value
-    let wethBalance = wethERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    // let wethBalance = wethERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let wethBalance = BigInt.fromString('309271738112914327855');
     let wethValue = toDecimal(wethBalance, 18).times(getWETHUSDRate())
     let wethRFV = wethValue.times(rfvRatio)
 
@@ -307,9 +309,9 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     if (blockNumber.gt(BigInt.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT_BLOCK))) {
         let curveGauge = CurveGaugeAllocator.bind(Address.fromString(CURVE_GAUGE_ALLOCATOR_CONTRACT))
         daiInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(ERC20DAI_CONTRACT)).value3, 18);
-        log.debug('daiInvestments: ', [daiInvestments.toString()]);
+        log.debug('daiInvestments: {}', [daiInvestments.toString()]);
         usdcInvestments = toDecimal(curveGauge.tokenInfo(Address.fromString(USDC_ERC20_CONTRACT)).value3, 6)
-        log.debug('usdcInvestments: ', [usdcInvestments.toString()]);
+        log.debug('usdcInvestments: {}', [usdcInvestments.toString()]);
         investments = daiInvestments.plus(usdcInvestments)
     }
     let stableValueDecimal = toDecimal(daiBalance, 18)
