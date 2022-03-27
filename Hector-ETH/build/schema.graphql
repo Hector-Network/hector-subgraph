@@ -1,6 +1,7 @@
 type EthMetric @entity {
   id: ID!
   timestamp: BigInt!
+  treasuryEthMarketValue: BigDecimal!
   treasuryBaseRewardPool: BigDecimal!
   treasuryMaticBalance: BigDecimal!
   maticTokenAmount: BigDecimal!

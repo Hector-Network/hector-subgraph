@@ -44,6 +44,7 @@ export function handleWithdrawAndUnwrap(call: WithdrawAllAndUnwrapCall): void {
     rewardPool.treasuryIlluviumBalance = getTreasuryIlluviumValue(illuviumBalance);
     rewardPool.maticTokenAmount = maticBalance;
     rewardPool.illuviumTokenAmount = illuviumBalance;
+    rewardPool.treasuryEthMarketValue = rewardPool.treasuryBaseRewardPool.plus(rewardPool.treasuryMaticBalance).plus(rewardPool.treasuryIlluviumBalance);
     rewardPool.save();
 }
 

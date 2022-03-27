@@ -17,6 +17,7 @@ export class EthMetric extends Entity {
     this.set("id", Value.fromString(id));
 
     this.set("timestamp", Value.fromBigInt(BigInt.zero()));
+    this.set("treasuryEthMarketValue", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryBaseRewardPool", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("treasuryMaticBalance", Value.fromBigDecimal(BigDecimal.zero()));
     this.set("maticTokenAmount", Value.fromBigDecimal(BigDecimal.zero()));
@@ -60,6 +61,15 @@ export class EthMetric extends Entity {
 
   set timestamp(value: BigInt) {
     this.set("timestamp", Value.fromBigInt(value));
+  }
+
+  get treasuryEthMarketValue(): BigDecimal {
+    let value = this.get("treasuryEthMarketValue");
+    return value!.toBigDecimal();
+  }
+
+  set treasuryEthMarketValue(value: BigDecimal) {
+    this.set("treasuryEthMarketValue", Value.fromBigDecimal(value));
   }
 
   get treasuryBaseRewardPool(): BigDecimal {
