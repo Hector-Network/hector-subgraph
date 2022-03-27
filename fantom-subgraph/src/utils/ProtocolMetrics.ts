@@ -53,7 +53,8 @@ import {
 } from './Price';
 const TOR_LP_POOL_BLOCK = '28731023';
 const BANK_BLOCK = '29042732';
-const FANTOM_VALIDATOR_AMOUNT = '838870';
+const FANTOM_DELEGATIONS_AMOUNT = '838870';
+const FANTOM_VALIDATORS_AMOUNT = '1000000';
 const FANTOM_VALIDATOR_BLOCK = '31262749';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
@@ -112,7 +113,7 @@ export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigIn
         protocolMetric.hecDaiTokenAmount = BigDecimal.fromString("0")
         protocolMetric.hecUsdcTokenAmount = BigDecimal.fromString("0")
         protocolMetric.hecFraxTokenAmount = BigDecimal.fromString("0")
-
+        protocolMetric.treasuryFantomDelegatorValue = bigDecimal.fromString('0');
         protocolMetric.save()
     }
     return protocolMetric as ProtocolMetric
@@ -229,18 +230,22 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let wftmValue = toDecimal(wftmBalance, 18).times(getFTMUSDRate())
     let wftmRFV = wftmValue.times(rfvRatio)
     let fantomValidatorValue = BigDecimal.fromString('0');
+    let fantomDelegatorValue = BigDecimal.fromString('0');
     if (blockNumber.gt(BigInt.fromString(FANTOM_VALIDATOR_BLOCK))) {
-        fantomValidatorValue = BigDecimal.fromString(FANTOM_VALIDATOR_AMOUNT).times(getFTMUSDRate())
+        const ftmUSDRate = getFTMUSDRate();
+        fantomValidatorValue = BigDecimal.fromString(FANTOM_VALIDATORS_AMOUNT).times(ftmUSDRate)
+        fantomDelegatorValue = BigDecimal.fromString(FANTOM_DELEGATIONS_AMOUNT).times(ftmUSDRate)
     }
 
     // Calculate boo value
     // let booBalance = booERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
-    let booBalance = BigInt.fromString('4462201');
+    let booBalance = BigInt.fromString('44622010000000000000000');
     let booValue = toDecimal(booBalance, 18).times(getBOOUSDRate())
     let booRFV = booValue.times(rfvRatio)
 
     // Calculate crv value
-    let crvBalance = crvERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    // let crvBalance = crvERC20.balanceOf(Address.fromString(TREASURY_ADDRESS))
+    let crvBalance = BigInt.fromString('103221204746192328171892');
     let crvValue = toDecimal(crvBalance, 18).times(getCRVUSDRate())
     let crvRFV = crvValue.times(rfvRatio)
 
@@ -323,7 +328,7 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let lpValue = hecdaiValue.plus(hecusdcValue).plus(hecfraxValue).plus(hecgohmValue)
     let rfvLpValue = hecdaiRFV.plus(hecusdcRFV).plus(hecfraxRFV).plus(hecgohmRFV)
 
-    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).plus(fantomValidatorValue);
+    let mv = stableValueDecimal.plus(lpValue).plus(wftmValue).plus(booValue).plus(crvValue).plus(wethValue).plus(fantomValidatorValue).plus(fantomDelegatorValue);
     let torLpValue = bigDecimal.fromString('0');
     if (blockNumber.gt(BigInt.fromString(TOR_LP_POOL_BLOCK))) {
         log.debug('TOR LP VALUE {}', [getTorLpValue().toString()])
@@ -398,7 +403,8 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
         toDecimal(wethBalance, 18),
         toDecimal(hecdaiBalance.plus(hecdaiLockedBalance), 18),
         toDecimal(hecusdcBalance, 6),
-        toDecimal(hecfraxBalance, 18)
+        toDecimal(hecfraxBalance, 18),
+        fantomDelegatorValue
     ]
 }
 
@@ -518,6 +524,7 @@ export function updateProtocolMetrics(blockNumber: BigInt, timestamp: BigInt): v
     pm.hecDaiTokenAmount = mv_rfv[35];
     pm.hecUsdcTokenAmount = mv_rfv[36];
     pm.hecFraxTokenAmount = mv_rfv[37];
+    pm.treasuryFantomDelegatorValue = mv_rfv[38];
 
 
     // Rebase rewards, APY, rebase
