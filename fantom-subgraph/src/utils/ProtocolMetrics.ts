@@ -56,6 +56,7 @@ const BANK_BLOCK = '29042732';
 const FANTOM_DELEGATIONS_AMOUNT = '838870';
 const FANTOM_VALIDATORS_AMOUNT = '1000000';
 const FANTOM_VALIDATOR_BLOCK = '31262749';
+const LQDR_BLOCK = '34951646';
 
 export function loadOrCreateProtocolMetric(blockNumber: BigInt, timestamp: BigInt): ProtocolMetric {
     let id = blockNumber.minus(blockNumber.mod(BigInt.fromString("16000")));
