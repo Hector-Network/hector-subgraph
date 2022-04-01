@@ -255,6 +255,10 @@ function getMV_RFV(blockNumber: BigInt): BigDecimal[] {
     let wethValue = toDecimal(wethBalance, 18).times(getWETHUSDRate())
     let wethRFV = wethValue.times(rfvRatio)
 
+    // calc LQDR value
+    let lqdrBalance = BigInt.fromString('35484000000000000000000');
+
+
     let hecusdRate = getHECUSDRate()
 
     //HECDAI

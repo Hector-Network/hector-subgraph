@@ -37,6 +37,7 @@ export function handleWithdrawAndUnwrap(call: WithdrawAllAndUnwrapCall): void {
     // calculating pool deposit amount
     const maticContract = Matic.bind(Address.fromString(MATIC_ADDRESS));
     const maticBalance = toDecimal(maticContract.balanceOf(Address.fromString(ETH_WALLET_ADDRESS)), 18);
+    // const maticBalance = BigDecimal.fromString('293378706892092953470455');
     const illuviumContract = Illuvium.bind(Address.fromString(ILLUVIUM_ADDRESS));
     const illuviumBalance = toDecimal(illuviumContract.balanceOf(Address.fromString(ETH_WALLET_ADDRESS)), 18);
     rewardPool.treasuryBaseRewardPool = getBaseRewardPool();
